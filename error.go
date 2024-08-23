@@ -6,5 +6,15 @@ import (
 )
 
 func notEqual(a, b reflect.Value) error {
-	return fmt.Errorf("%v != %v", a.Interface(), b.Interface())
+	var va, vb any
+
+	if a.Kind() != reflect.Invalid {
+		va = a.Interface()
+	}
+
+	if b.Kind() != reflect.Invalid {
+		vb = b.Interface()
+	}
+
+	return fmt.Errorf("%v != %v", va, vb)
 }

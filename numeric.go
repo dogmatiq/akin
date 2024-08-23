@@ -5,45 +5,45 @@ import (
 	"reflect"
 )
 
-// numeric returns a predicate that checks if it's argument can be losslessly
+// compileNumeric returns a predicate that checks if it's argument can be losslessly
 // converted to the same type as the spec value, and when converted the values
 // are equal.
-func numeric(spec reflect.Value) func(reflect.Value) error {
+func compileNumeric(spec reflect.Value) func(reflect.Value) error {
 	specT := spec.Type()
 	isNeg := isNegative(spec)
 
-	return func(v reflect.Value) error {
-		t := v.Type()
+	return func(arg reflect.Value) error {
+		argT := arg.Type()
 
-		if !t.ConvertibleTo(specT) {
-			return fmt.Errorf("cannot convert %s to %s", t, specT)
+		if !argT.ConvertibleTo(specT) {
+			return fmt.Errorf("cannot convert %s to %s", argT, specT)
 		}
 
-		if !specT.ConvertibleTo(t) {
-			return fmt.Errorf("cannot convert back to %s from %s", t, specT)
+		if !specT.ConvertibleTo(argT) {
+			return fmt.Errorf("cannot convert back to %s from %s", argT, specT)
 		}
 
-		if !v.CanConvert(specT) {
-			return fmt.Errorf("cannot convert %#v value to %s", v.Interface(), specT)
+		if !arg.CanConvert(specT) {
+			return fmt.Errorf("cannot convert %#v value to %s", arg.Interface(), specT)
 		}
 
-		if isNeg != isNegative(v) {
-			return notEqual(v, spec)
+		if isNeg != isNegative(arg) {
+			return notEqual(arg, spec)
 		}
 
-		converted := v.Convert(specT)
+		converted := arg.Convert(specT)
 		if !converted.Equal(spec) {
-			return notEqual(v, spec)
+			return notEqual(arg, spec)
 		}
 
-		reverted := converted.Convert(v.Type())
-		if !reverted.Equal(v) {
+		reverted := converted.Convert(arg.Type())
+		if !reverted.Equal(arg) {
 			return fmt.Errorf(
 				"type conversion is lossy, %T(%v) != %T(%v)",
 				reverted.Interface(),
 				reverted.Interface(),
-				v.Interface(),
-				v.Interface(),
+				arg.Interface(),
+				arg.Interface(),
 			)
 		}
 

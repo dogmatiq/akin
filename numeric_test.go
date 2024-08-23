@@ -53,7 +53,7 @@ func Test_numeric(t *testing.T) {
 		for _, c := range cases {
 			t.Run(c.Name, func(t *testing.T) {
 				for _, a := range c.Values {
-					pred := New(a)
+					pred := Compile(a)
 
 					for _, b := range c.Values {
 						if err := pred(b); err != nil {
