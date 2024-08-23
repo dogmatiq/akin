@@ -15,8 +15,8 @@ func Compile[T any](spec T) func(T) error {
 
 // Test returns nil if v is akin to the given specification value.
 //
-// Callers should prefer [Compile] if multiple values will be tested against the
-// same specification.
+// If multiple values will be compared against the same specification, it is
+// more efficient to compile the specification once using [Compile].
 func Test(spec, v any) error {
 	return Compile(spec)(v)
 }
