@@ -1,1 +1,2 @@
-package GITHUB_REPO_NAME
+// Package akin performs fuzzy comparison of arbitrary values.
+package akin
