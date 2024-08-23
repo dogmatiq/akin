@@ -13,7 +13,10 @@ func Compile[T any](spec T) func(T) error {
 	}
 }
 
-// Test returns true if the candidate value v is akin to the spec value.
+// Test returns nil if v is akin to the given specification value.
+//
+// Callers should prefer [Compile] if multiple values will be tested against the
+// same specification.
 func Test(spec, v any) error {
 	return Compile(spec)(v)
 }
