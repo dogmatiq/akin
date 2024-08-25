@@ -53,10 +53,10 @@ func Test_numeric(t *testing.T) {
 		for _, c := range cases {
 			t.Run(c.Name, func(t *testing.T) {
 				for _, a := range c.Values {
-					pred := Compile(a)
+					spec := NewSpec(a)
 
 					for _, b := range c.Values {
-						if err := pred(b); err != nil {
+						if err := spec.Compare(b).Error; err != nil {
 							t.Errorf("expected (%T) %+#v to be akin to (%T) %+#v: %s", a, a, b, b, err)
 						}
 					}

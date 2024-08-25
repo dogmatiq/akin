@@ -3,8 +3,6 @@ package akin_test
 import (
 	"testing"
 	"unsafe"
-
-	. "github.com/dogmatiq/akin"
 )
 
 func Test_nil(t *testing.T) {
@@ -22,11 +20,9 @@ func Test_nil(t *testing.T) {
 	for i, a := range nils {
 		for j, b := range nils {
 			if i == j {
-				continue
-			}
-
-			if Test(a, b) == nil {
-				t.Errorf("did not expect %#v to be akin to %#v", a, b)
+				assertAkin(t, a, b)
+			} else {
+				assertNotAkin(t, a, b)
 			}
 		}
 	}

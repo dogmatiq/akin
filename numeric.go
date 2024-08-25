@@ -5,14 +5,11 @@ import (
 	"reflect"
 )
 
-// compileNumeric returns a predicate that checks if it's argument can be losslessly
-// converted to the same type as the spec value, and when converted the values
-// are equal.
-func compileNumeric(spec reflect.Value) func(reflect.Value) error {
+func compileNumeric(spec reflect.Value) Spec {
 	specT := spec.Type()
 	isNeg := isNegative(spec)
 
-	return func(arg reflect.Value) error {
+	return specFunc(func(arg reflect.Value) error {
 		argT := arg.Type()
 
 		if !argT.ConvertibleTo(specT) {
@@ -48,7 +45,7 @@ func compileNumeric(spec reflect.Value) func(reflect.Value) error {
 		}
 
 		return nil
-	}
+	})
 }
 
 func isNegative(v reflect.Value) bool {
