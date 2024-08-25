@@ -2,8 +2,8 @@ package akin
 
 import "reflect"
 
-func compileSlice(spec reflect.Value) Spec {
-	return specFunc(func(arg reflect.Value) error {
+func compileSlice(Value) Spec {
+	return specFunc(func(arg Value) error {
 		if err := requireKind(reflect.Slice, arg); err != nil {
 			return err
 		}

@@ -8,14 +8,14 @@ import (
 
 func assertAkin(t *testing.T, spec, v any) {
 	t.Helper()
-	if Test(spec, v) != nil {
-		t.Errorf("expected %T(%t) to be akin to %T(%t)", spec, spec, v, v)
+	if err := Test(spec, v); err != nil {
+		t.Errorf("expected %T(%#v) to be akin to %T(%#v): %s", spec, spec, v, v, err)
 	}
 }
 
 func assertNotAkin(t *testing.T, spec, v any) {
 	t.Helper()
 	if Test(spec, v) == nil {
-		t.Errorf("did not expect %T(%t) to be akin to %T(%t)", spec, spec, v, v)
+		t.Errorf("did not expect %T(%#v) to be akin to %T(%#v)", spec, spec, v, v)
 	}
 }

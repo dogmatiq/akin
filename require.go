@@ -5,44 +5,35 @@ import (
 	"reflect"
 )
 
-func notEqual(a, b reflect.Value) error {
-	var va, vb any
-
-	if a.Kind() != reflect.Invalid {
-		va = a.Interface()
-	}
-
-	if b.Kind() != reflect.Invalid {
-		vb = b.Interface()
-	}
-
-	return fmt.Errorf("%v != %v", va, vb)
+func notEqualErr(got, want Value) error {
+	return fmt.Errorf("%T(%v) != %T(%v)", got.value, got.value, want.value, want.value)
 }
 
-func requireEquality(req, v reflect.Value) error {
-	if v.Equal(req) {
+func requireEqualTo(x, v Value) error {
+	if v.rvalue.Equal(x.rvalue) {
 		return nil
 	}
-	return notEqual(v, req)
+	return notEqualErr(v, x)
 }
 
-func requireType(t reflect.Type, v reflect.Value) error {
-	if t == v.Type() {
+func requireType(t reflect.Type, v Value) error {
+	if v.rtype == t {
 		return nil
 	}
-	return fmt.Errorf("%s is not %s", v.Type(), t)
+	return fmt.Errorf("%s is not %s", v.rtype, t)
 }
 
-func requireKind(k reflect.Kind, v reflect.Value) error {
+func requireKind(k reflect.Kind, v Value) error {
 	if k == reflect.Invalid {
 		panic("cannot require invalid kind")
 	}
 
-	if v.Kind() == k {
+	if v.rvalue.Kind() == k {
 		return nil
 	}
 
-	if v.Kind() == reflect.Invalid {
+	if v.rvalue.Kind() == reflect.Invalid {
+		// TODO
 		return fmt.Errorf("invalid value")
 	}
 
@@ -55,8 +46,15 @@ func requireKind(k reflect.Kind, v reflect.Value) error {
 		reflect.Int64,
 		reflect.Interface,
 		reflect.UnsafePointer:
-		return fmt.Errorf("%s is not an %s", v.Type(), k)
+		return fmt.Errorf("%s is not an %s", v.rtype, k)
 	}
 
-	return fmt.Errorf("%s is not a %s", v.Type(), k)
+	return fmt.Errorf("%s is not a %s", v.rtype, k)
+}
+
+func requireConvertibleTo(t reflect.Type, v Value) error {
+	if !v.rtype.ConvertibleTo(t) {
+		return fmt.Errorf("cannot convert %s to %s", v.rtype, t)
+	}
+	return nil
 }
