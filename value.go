@@ -2,18 +2,26 @@ package akin
 
 import "reflect"
 
-// Value is a value that can be compared against a [Spec].
-type Value struct {
-	value  any
-	rvalue reflect.Value
-	rtype  reflect.Type
+// value is a potential member of a [Set].
+type value struct {
+	v       any
+	r       reflect.Value
+	dynamic reflect.Type
+	static  reflect.Type
 }
 
-// ValueOf returns a new [Value] representing v.
-func ValueOf[T any](v T) Value {
-	return Value{
-		value:  v,
-		rvalue: reflect.ValueOf(v),
-		rtype:  reflect.TypeOf(v),
+// valueOf returns a new [value] representing v.
+func valueOf[T any](v T) value {
+	s := reflect.TypeFor[T]()
+	d := reflect.TypeOf(v)
+	if d == nil {
+		d = s
+	}
+
+	return value{
+		v:       v,
+		r:       reflect.ValueOf(v),
+		dynamic: d,
+		static:  s,
 	}
 }
