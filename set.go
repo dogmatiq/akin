@@ -5,18 +5,18 @@ type Set interface {
 	// Contains returns true if the set contains v.
 	Contains(v any) bool
 
-	// Eval evaluates v's membership in the set.
-	Eval(v any) Membership
+	// eval evaluates v's membership in the set.
+	eval(v any) membership
 
 	String() string
 }
 
-// Membership describes a value's membership to a specific [Set].
-type Membership struct {
+// membership describes a value's membership to a specific [Set].
+type membership struct {
 	// IsMember is true if the value is a member of the set.
 	IsMember bool
 
-	// Reason is a human-readable explanation of why the value is or isn't a
-	// member of the set.
-	Reason string
+	// For and Against are the reasons for and against the value being a member
+	// of the set, respectively.
+	For, Against []string
 }

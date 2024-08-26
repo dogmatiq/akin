@@ -6,8 +6,8 @@ import (
 	. "github.com/dogmatiq/akin"
 )
 
-func TestType(t *testing.T) {
-	set := HasType[int]()
+func TestDomain(t *testing.T) {
+	set := DomainFor[int]()
 
 	AssertContains(t, set, 0)
 	AssertNotContains(t, set, uint(0))

@@ -1,7 +1,5 @@
 package akin
 
-import "fmt"
-
 const (
 	// Universe is the [Set] of all possible values.
 	Universe extremum = true
@@ -22,17 +20,17 @@ func (e extremum) Contains(any) bool {
 	return bool(e)
 }
 
-func (e extremum) Eval(any) Membership {
+func (e extremum) eval(any) membership {
 	if e {
-		return Membership{
+		return membership{
 			IsMember: true,
-			Reason:   fmt.Sprintf("%s contains all values", e),
+			For:      []string{"everything is a member of " + e.String()},
 		}
 	}
 
-	return Membership{
+	return membership{
 		IsMember: false,
-		Reason:   fmt.Sprintf("%s contains no values", e),
+		Against:  []string{"nothing is a member of " + e.String()},
 	}
 }
 

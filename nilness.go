@@ -4,7 +4,7 @@ import (
 	"reflect"
 )
 
-var (
+const (
 	// Nil is the [Set] of all nil values.
 	Nil nilness = true
 
@@ -14,22 +14,25 @@ var (
 
 type nilness bool
 
-var _ Set = Nil
+var (
+	_ Set = Nil
+	_ Set = NonNil
+)
 
 func (s nilness) Contains(v any) bool {
 	return bool(s) == isNil(v)
 }
 
-func (s nilness) Eval(v any) Membership {
-	if s {
-		return Membership{
-			IsMember: s.Contains(v),
-			Reason:   s.str(),
+func (s nilness) eval(v any) membership {
+	if s.Contains(v) {
+		return membership{
+			IsMember: true,
+			For:      []string{"it " + s.str()},
 		}
 	}
-	return Membership{
-		IsMember: s.Contains(v),
-		Reason:   s.str(),
+	return membership{
+		IsMember: false,
+		Against:  []string{"it " + (!s).str()},
 	}
 }
 
@@ -45,12 +48,10 @@ func (s nilness) str() string {
 }
 
 func isNil(v any) bool {
-	r := reflect.ValueOf(v)
+	r := valueOf(v)
 	switch r.Kind() {
 	default:
 		return false
-	case reflect.Invalid:
-		return true
 	case
 		reflect.Interface,
 		reflect.Pointer,

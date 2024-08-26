@@ -1,10 +1,24 @@
 package akin
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+)
 
 // Singleton returns a [Set] containing v.
+//
+// It panics if v's type is not comparable.
 func Singleton(v any) Set {
-	return singleton{reflect.ValueOf(v)}
+	r := valueOf(v)
+
+	if !r.Comparable() {
+		panic(fmt.Sprintf(
+			"%s is not comparable",
+			renderT(r.Type()),
+		))
+	}
+
+	return singleton{r}
 }
 
 type singleton struct {
@@ -12,26 +26,23 @@ type singleton struct {
 }
 
 func (s singleton) Contains(v any) bool {
-	if s.v.Kind() == reflect.Invalid {
-		return v == nil
-	}
-	return reflect.DeepEqual(s.v.Interface(), v)
+	return valueOf(v).Equal(s.v)
 }
 
-func (s singleton) Eval(v any) Membership {
+func (s singleton) eval(v any) membership {
 	if s.Contains(v) {
-		return Membership{
+		return membership{
 			IsMember: true,
-			Reason:   "is deep-equal to " + renderValue(s.v),
+			For:      []string{"is equal to " + renderV(s.v)},
 		}
 	}
 
-	return Membership{
+	return membership{
 		IsMember: false,
-		Reason:   "is not deep-equal to " + renderValue(s.v),
+		Against:  []string{"is not equal to " + renderV(s.v)},
 	}
 }
 
 func (s singleton) String() string {
-	return "{" + renderValue(s.v) + "}"
+	return "{" + renderV(s.v) + "}"
 }

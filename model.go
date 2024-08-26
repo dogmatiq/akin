@@ -4,28 +4,37 @@ import "reflect"
 
 // To returns the [Set] of values that are "akin to" the given model value.
 func To(model any) Set {
-	return fromModel(reflect.ValueOf(model))
+	v := valueOf(model)
+	if set, ok := fromModel(v); ok {
+		return set
+	}
+	return Singleton(model)
 }
 
-func fromModel(model reflect.Value) Set {
-	switch model.Kind() {
-	case reflect.Invalid:
-		return Nil
-		// 	case reflect.Slice:
-		// 		return compileSlice(spec)
+func fromModel(m reflect.Value) (Set, bool) {
+	switch m.Kind() {
+	// case reflect.Invalid:
+	// 	return Union(Nil, Singleton(uintptr(0))), true
 
-		// 	case reflect.Map:
-		// 		return compileMap(spec)
+	// 	case reflect.Slice:
+	// 		return compileSlice(spec)
 
-		// 	case reflect.Func:
-		// 		return compileFunc(spec)
+	// 	case reflect.Map:
+	// 		return compileMap(spec)
 
-		// 		// 		// case reflect.Uintptr:
-		// 		// 		// case reflect.Complex64:
-		// 		// 		// case reflect.Complex128:
-		// 		// 		// case reflect.Array:
-		// 		// 		// case reflect.Chan:
-		// 		// 		// case reflect.Interface:
+	// 	case reflect.Func:
+	// 		return compileFunc(spec)
+
+	// 		// 		// case reflect.Uintptr:
+	// 		// 		// case reflect.Complex64:
+	// 		// 		// case reflect.Complex128:
+	// 		// 		// case reflect.Array:
+	// 		// 		// case reflect.Chan:
+	case reflect.Interface:
+		if m.Type() == reflect.TypeFor[any]() && m.IsNil() {
+			return Nil, true
+		}
+
 		// 		// 		// case reflect.Pointer:
 		// 		// 		// case reflect.String:
 		// 		// 		// case reflect.Struct:
@@ -50,5 +59,5 @@ func fromModel(model reflect.Value) Set {
 
 	}
 
-	return singleton{model}
+	return nil, false
 }

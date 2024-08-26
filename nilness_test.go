@@ -20,7 +20,8 @@ var nils = []any{
 
 // nonNils contains a non-nil value for each kind that may be nilable.
 var nonNils = []any{
-	0, // any itself is a nilable type
+	"", // any itself is a nilable type
+	uintptr(0),
 	unsafe.Pointer(new(int)),
 	new(int),
 	[]int{},
@@ -39,22 +40,4 @@ func TestNilness(t *testing.T) {
 		AssertContains(t, NonNil, v)
 		AssertNotContains(t, Nil, v)
 	}
-
-	// TODO
-	// 	uintptr(0), don't forget, this is "nil" too when using a model
-
-	// // for i, a := range nils {
-	// // 	for j, b := range nils {
-	// // 		t.Run(
-	// // 			fmt.Sprintf("%T(%v) vs %T(%v)", a, a, b, b),
-	// // 			func(t *testing.T) {
-	// // 				if i == j {
-	// // 					assertAkin(t, a, b)
-	// // 				} else {
-	// // 					assertNotAkin(t, a, b)
-	// // 				}
-	// // 			},
-	// // 		)
-	// // 	}
-	// // }
 }
