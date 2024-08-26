@@ -22,16 +22,16 @@ func (s hasType) Eval(v any) Membership {
 	if s.Contains(v) {
 		return Membership{
 			IsMember: true,
-			Reason:   "has type " + s.t.String(),
+			Reason:   "has type " + renderType(s.t),
 		}
 	}
 
 	return Membership{
 		IsMember: false,
-		Reason:   "does not have type " + s.t.String(),
+		Reason:   "does not have type " + renderType(s.t),
 	}
 }
 
 func (s hasType) String() string {
-	return "{has type " + s.t.String() + "}"
+	return "{has type " + renderType(s.t) + "}"
 }

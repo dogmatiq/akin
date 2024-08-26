@@ -1,12 +1,14 @@
 package akin
 
-// To returns the set of values that are "akin to" the given model value.
-func To(model any) Set {
-	return fromModel(valueOf(model))
+import "reflect"
+
+// Like returns the [Set] of values that are like the given model value.
+func Like(model any) Set {
+	return like(reflect.ValueOf(model))
 }
 
-func fromModel(value) Set {
-	// 	switch spec.dynamic.Kind() {
+func like(model reflect.Value) Set {
+	// switch model.Kind() {
 	// 	case reflect.Slice:
 	// 		return compileSlice(spec)
 
@@ -44,6 +46,7 @@ func fromModel(value) Set {
 	// 	return t.PkgPath() == "" && t.Name() != ""
 	// }
 
-	panic("not implemented")
+	// }
 	// return equalitySpec{spec}
+	panic("not implemented")
 }
