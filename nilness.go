@@ -45,9 +45,20 @@ func (s nilness) str() string {
 }
 
 func isNil(v any) bool {
-	if v == nil {
-		return true
-	}
 	r := reflect.ValueOf(v)
-	return r.IsNil()
+	switch r.Kind() {
+	default:
+		return false
+	case reflect.Invalid:
+		return true
+	case
+		reflect.Interface,
+		reflect.Pointer,
+		reflect.UnsafePointer,
+		reflect.Slice,
+		reflect.Map,
+		reflect.Func,
+		reflect.Chan:
+		return r.IsNil()
+	}
 }

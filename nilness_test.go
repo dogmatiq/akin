@@ -7,6 +7,7 @@ import (
 	. "github.com/dogmatiq/akin"
 )
 
+// nils contains a nil value for each kind that may be nilable.
 var nils = []any{
 	nil,
 	unsafe.Pointer(nil),
@@ -17,7 +18,9 @@ var nils = []any{
 	(chan int)(nil),
 }
 
+// nonNils contains a non-nil value for each kind that may be nilable.
 var nonNils = []any{
+	0, // any itself is a nilable type
 	unsafe.Pointer(new(int)),
 	new(int),
 	[]int{},
