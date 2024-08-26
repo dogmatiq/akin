@@ -33,5 +33,5 @@ func (s domain) eval(v any) membership {
 }
 
 func (s domain) String() string {
-	return "{has type " + renderT(s.t) + "}"
+	return "{ x | x inhabits " + renderT(s.t) + " }"
 }

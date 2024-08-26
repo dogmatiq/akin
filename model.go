@@ -1,63 +1,34 @@
 package akin
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // To returns the [Set] of values that are "akin to" the given model value.
 func To(model any) Set {
 	v := valueOf(model)
-	if set, ok := fromModel(v); ok {
-		return set
-	}
-	return Singleton(model)
+	return fromModel(v)
 }
 
-func fromModel(m reflect.Value) (Set, bool) {
-	switch m.Kind() {
-	// case reflect.Invalid:
-	// 	return Union(Nil, Singleton(uintptr(0))), true
+func fromModel(v reflect.Value) Set {
+	if v.Type().PkgPath() == "" {
+		switch v.Kind() {
+		case reflect.Array:
+		case reflect.Chan:
+		case reflect.Func:
 
-	// 	case reflect.Slice:
-	// 		return compileSlice(spec)
+		case reflect.Interface:
+			if v.Type() == reflect.TypeFor[any]() && v.IsNil() {
+				return Nil
+			}
 
-	// 	case reflect.Map:
-	// 		return compileMap(spec)
-
-	// 	case reflect.Func:
-	// 		return compileFunc(spec)
-
-	// 		// 		// case reflect.Uintptr:
-	// 		// 		// case reflect.Complex64:
-	// 		// 		// case reflect.Complex128:
-	// 		// 		// case reflect.Array:
-	// 		// 		// case reflect.Chan:
-	case reflect.Interface:
-		if m.Type() == reflect.TypeFor[any]() && m.IsNil() {
-			return Nil, true
+		case reflect.Map:
+		case reflect.Pointer:
+		case reflect.Slice:
+		case reflect.String:
+		case reflect.Struct:
 		}
-
-		// 		// 		// case reflect.Pointer:
-		// 		// 		// case reflect.String:
-		// 		// 		// case reflect.Struct:
-		// 		// 		// case reflect.UnsafePointer:
-		// 		// 	}
-		// 	}
-
-		// 	if isBuiltIn(spec.dynamic) {
-		// 		return Convertible{spec}
-		// 	}
-
-		// func is[T any](t reflect.Type) bool {
-		// 	return t == reflect.TypeFor[T]()
-		// }
-
-		// func isBuiltIn(t reflect.Type) bool {
-		// 	if t == nil {
-		// 		return false
-		// 	}
-		// 	return t.PkgPath() == "" && t.Name() != ""
-		// }
-
 	}
 
-	return nil, false
+	return singleton{v}
 }

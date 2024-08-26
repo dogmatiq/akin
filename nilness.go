@@ -20,7 +20,7 @@ var (
 )
 
 func (s nilness) Contains(v any) bool {
-	return bool(s) == isNil(v)
+	return bool(s) == isNil(valueOf(v))
 }
 
 func (s nilness) eval(v any) membership {
@@ -37,7 +37,7 @@ func (s nilness) eval(v any) membership {
 }
 
 func (s nilness) String() string {
-	return "{" + s.str() + "}"
+	return "{ " + s.str() + " }"
 }
 
 func (s nilness) str() string {
@@ -47,9 +47,8 @@ func (s nilness) str() string {
 	return "is non-nil"
 }
 
-func isNil(v any) bool {
-	r := valueOf(v)
-	switch r.Kind() {
+func isNil(v reflect.Value) bool {
+	switch v.Kind() {
 	default:
 		return false
 	case
@@ -60,6 +59,6 @@ func isNil(v any) bool {
 		reflect.Map,
 		reflect.Func,
 		reflect.Chan:
-		return r.IsNil()
+		return v.IsNil()
 	}
 }

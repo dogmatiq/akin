@@ -44,5 +44,5 @@ func (s singleton) eval(v any) membership {
 }
 
 func (s singleton) String() string {
-	return "{" + renderV(s.v) + "}"
+	return "{ " + renderV(s.v) + " }"
 }
