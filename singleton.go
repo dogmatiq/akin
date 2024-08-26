@@ -22,13 +22,13 @@ func (s singleton) Eval(v any) Membership {
 	if s.Contains(v) {
 		return Membership{
 			IsMember: true,
-			Reason:   "is equal to " + renderValue(s.v),
+			Reason:   "is deep-equal to " + renderValue(s.v),
 		}
 	}
 
 	return Membership{
 		IsMember: false,
-		Reason:   "is not equal to " + renderValue(s.v),
+		Reason:   "is not deep-equal to " + renderValue(s.v),
 	}
 }
 

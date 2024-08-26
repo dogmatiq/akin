@@ -9,6 +9,10 @@ func renderType(t reflect.Type) string {
 }
 
 func renderValue(v reflect.Value) string {
+	if v.Kind() == reflect.Invalid {
+		return "any(nil)"
+	}
+
 	// TODO
 	return v.String()
 }

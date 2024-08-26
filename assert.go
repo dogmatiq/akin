@@ -1,6 +1,7 @@
 package akin
 
 import (
+	"reflect"
 	"slices"
 	"testing"
 )
@@ -11,7 +12,12 @@ func AssertContains(t *testing.T, s Set, v any, reasons ...string) {
 
 	m := s.Eval(v)
 	if !m.IsMember {
-		t.Fatalf("expected %T(%#v) to be a member of %s: %s", v, v, s, m.Reason)
+		t.Fatalf(
+			"expected %s to be a member of %s, but it %s",
+			renderValue(reflect.ValueOf(v)),
+			s,
+			m.Reason,
+		)
 	}
 
 	if len(reasons) != 0 && !slices.Contains(reasons, m.Reason) {
@@ -26,7 +32,12 @@ func AssertNotContains(t *testing.T, s Set, v any, reasons ...string) {
 	m := s.Eval(v)
 
 	if m.IsMember {
-		t.Fatalf("expected %T(%#v) to not be a member of %s: %s", v, v, s, m.Reason)
+		t.Fatalf(
+			"did not expect %s to be a member of %s, but it %s",
+			renderValue(reflect.ValueOf(v)),
+			s,
+			m.Reason,
+		)
 	}
 
 	if len(reasons) != 0 && !slices.Contains(reasons, m.Reason) {

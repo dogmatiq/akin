@@ -6,8 +6,8 @@ import (
 	. "github.com/dogmatiq/akin"
 )
 
-func TestToModel_nil(t *testing.T) {
-	set := Like(nil)
+func TestTo_nil(t *testing.T) {
+	set := To(nil)
 
 	for _, v := range nils {
 		AssertContains(t, set, v)
