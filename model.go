@@ -2,11 +2,13 @@ package akin
 
 import (
 	"reflect"
+
+	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
 // To returns the [Set] of values that are "akin to" the given model value.
 func To(model any) Set {
-	v := valueOf(model)
+	v := reflectx.ValueOf(model)
 	return fromModel(v)
 }
 
@@ -19,7 +21,7 @@ func fromModel(v reflect.Value) Set {
 
 		case reflect.Interface:
 			if v.Type() == reflect.TypeFor[any]() && v.IsNil() {
-				return Nil
+				return Union(Nil, Singleton(uintptr(0)))
 			}
 
 		case reflect.Map:

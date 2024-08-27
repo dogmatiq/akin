@@ -9,8 +9,8 @@ import (
 func TestDomain(t *testing.T) {
 	set := DomainFor[int]()
 
-	AssertContains(t, set, 0)
-	AssertNotContains(t, set, uint(0))
-	AssertNotContains(t, set, float64(0))
-	AssertNotContains(t, set, "0")
+	AssertIsMember(t, set, 0)
+	AssertIsNotMember(t, set, uint(0))
+	AssertIsNotMember(t, set, float64(0))
+	AssertIsNotMember(t, set, "0")
 }

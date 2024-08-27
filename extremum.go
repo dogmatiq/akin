@@ -16,27 +16,32 @@ var (
 	_ Set = Empty
 )
 
-func (e extremum) Contains(any) bool {
-	return bool(e)
-}
-
-func (e extremum) eval(any) membership {
-	if e {
-		return membership{
-			IsMember: true,
-			For:      []string{"everything is a member of " + e.String()},
-		}
-	}
-
-	return membership{
-		IsMember: false,
-		Against:  []string{"nothing is a member of " + e.String()},
-	}
-}
-
-func (e extremum) String() string {
-	if e {
+func (s extremum) String() string {
+	if s {
 		return "Ω"
 	}
 	return "∅"
+}
+
+func (s extremum) Contains(any) bool {
+	return bool(s)
+}
+
+func (s extremum) eval(v any) evaluation {
+	return newEvaluation(
+		s,
+		v,
+		bool(s),
+		constant(s),
+	)
+}
+
+// constant is a [predicate] that always returns the same result.
+type constant bool
+
+func (p constant) String(bool) string {
+	if p {
+		return "everything is a member of Ω"
+	}
+	return "nothing is a member of ∅"
 }

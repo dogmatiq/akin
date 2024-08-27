@@ -3,13 +3,15 @@ package akin
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
 // Singleton returns a [Set] containing v.
 //
 // It panics if v's type is not comparable.
 func Singleton(v any) Set {
-	r := valueOf(v)
+	r := reflectx.ValueOf(v)
 
 	if !r.Comparable() {
 		panic(fmt.Sprintf(
@@ -25,24 +27,30 @@ type singleton struct {
 	v reflect.Value
 }
 
-func (s singleton) Contains(v any) bool {
-	return valueOf(v).Equal(s.v)
-}
-
-func (s singleton) eval(v any) membership {
-	if s.Contains(v) {
-		return membership{
-			IsMember: true,
-			For:      []string{"is equal to " + renderV(s.v)},
-		}
-	}
-
-	return membership{
-		IsMember: false,
-		Against:  []string{"is not equal to " + renderV(s.v)},
-	}
-}
-
 func (s singleton) String() string {
-	return "{ " + renderV(s.v) + " }"
+	return "{ " + renderTV(s.v) + " }"
+}
+
+func (s singleton) Contains(v any) bool {
+	return reflectx.ValueOf(v).Equal(s.v)
+}
+
+func (s singleton) eval(v any) evaluation {
+	return newEvaluation(
+		s,
+		v,
+		s.Contains(v),
+		isEqual{s.v},
+	)
+}
+
+type isEqual struct {
+	v reflect.Value
+}
+
+func (r isEqual) String(inverse bool) string {
+	if inverse {
+		return "it is not equal to " + renderTV(r.v)
+	}
+	return "it is equal to " + renderTV(r.v)
 }

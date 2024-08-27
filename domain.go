@@ -14,24 +14,30 @@ type domain struct {
 	t reflect.Type
 }
 
+func (s domain) String() string {
+	return "{ x | x has type " + renderT(s.t) + " }"
+}
+
 func (s domain) Contains(v any) bool {
 	return reflect.TypeOf(v) == s.t
 }
 
-func (s domain) eval(v any) membership {
-	if s.Contains(v) {
-		return membership{
-			IsMember: true,
-			For:      []string{"it has type " + renderT(s.t)},
-		}
-	}
-
-	return membership{
-		IsMember: false,
-		Against:  []string{"it does not have type " + renderT(s.t)},
-	}
+func (s domain) eval(v any) evaluation {
+	return newEvaluation(
+		s,
+		v,
+		s.Contains(v),
+		hasType{s.t},
+	)
 }
 
-func (s domain) String() string {
-	return "{ x | x inhabits " + renderT(s.t) + " }"
+type hasType struct {
+	t reflect.Type
+}
+
+func (r hasType) String(isMember bool) string {
+	if isMember {
+		return "does not have type " + renderT(r.t)
+	}
+	return "has type " + renderT(r.t)
 }

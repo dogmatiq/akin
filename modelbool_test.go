@@ -15,30 +15,30 @@ func TestTo_bool(t *testing.T) {
 	)
 
 	t.Run("built-in true", func(t *testing.T) {
-		AssertContains(t, To(true), true)
-		AssertContains(t, To(true), userTrue)
-		AssertNotContains(t, To(true), false)
-		AssertNotContains(t, To(true), userFalse)
+		AssertIsMember(t, To(true), true)
+		AssertIsMember(t, To(true), userTrue)
+		AssertIsNotMember(t, To(true), false)
+		AssertIsNotMember(t, To(true), userFalse)
 	})
 
 	t.Run("built-in false", func(t *testing.T) {
-		AssertContains(t, To(false), false)
-		AssertContains(t, To(false), userFalse)
-		AssertNotContains(t, To(false), true)
-		AssertNotContains(t, To(false), userTrue)
+		AssertIsMember(t, To(false), false)
+		AssertIsMember(t, To(false), userFalse)
+		AssertIsNotMember(t, To(false), true)
+		AssertIsNotMember(t, To(false), userTrue)
 	})
 
 	t.Run("user-defined true", func(t *testing.T) {
-		AssertContains(t, To(userTrue), userTrue)
-		AssertNotContains(t, To(userTrue), userFalse)
-		AssertNotContains(t, To(userTrue), true) // user-defined spec requires types to match
-		AssertNotContains(t, To(userTrue), false)
+		AssertIsMember(t, To(userTrue), userTrue)
+		AssertIsNotMember(t, To(userTrue), userFalse)
+		AssertIsNotMember(t, To(userTrue), true) // user-defined spec requires types to match
+		AssertIsNotMember(t, To(userTrue), false)
 	})
 
 	t.Run("user-defined false", func(t *testing.T) {
-		AssertContains(t, To(userFalse), userFalse)
-		AssertNotContains(t, To(userFalse), userTrue)
-		AssertNotContains(t, To(userFalse), true)
-		AssertNotContains(t, To(userFalse), false) // user-defined spec requires types to match
+		AssertIsMember(t, To(userFalse), userFalse)
+		AssertIsNotMember(t, To(userFalse), userTrue)
+		AssertIsNotMember(t, To(userFalse), true)
+		AssertIsNotMember(t, To(userFalse), false) // user-defined spec requires types to match
 	})
 }

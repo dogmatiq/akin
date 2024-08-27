@@ -27,32 +27,6 @@ func Union(sets ...Set) Set {
 
 type union []Set
 
-func (s union) Contains(v any) bool {
-	for _, set := range s {
-		if set.Contains(v) {
-			return true
-		}
-	}
-	return false
-}
-
-func (s union) eval(v any) membership {
-	var m membership
-
-	for _, set := range s {
-		x := set.eval(v)
-
-		if x.IsMember {
-			m.IsMember = true
-		}
-
-		m.For = append(m.For, x.For...)
-		m.Against = append(m.Against, x.Against...)
-	}
-
-	return m
-}
-
 func (s union) String() string {
 	var w strings.Builder
 
@@ -64,4 +38,34 @@ func (s union) String() string {
 	}
 
 	return w.String()
+}
+
+func (s union) Contains(v any) bool {
+	for _, set := range s {
+		if set.Contains(v) {
+			return true
+		}
+	}
+	return false
+}
+
+func (s union) eval(v any) evaluation {
+	e := evaluation{
+		Set:   s,
+		Value: v,
+	}
+
+	for _, set := range s {
+		x := set.eval(v)
+
+		if x.IsMember {
+			e.IsMember = true
+		}
+
+		for _, p := range x.Predicates {
+			e.Predicates = append(e.Predicates, p)
+		}
+	}
+
+	return e
 }

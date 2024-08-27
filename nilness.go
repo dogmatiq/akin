@@ -1,8 +1,6 @@
 package akin
 
-import (
-	"reflect"
-)
+import "github.com/dogmatiq/akin/internal/reflectx"
 
 const (
 	// Nil is the [Set] of all nil values.
@@ -19,46 +17,34 @@ var (
 	_ Set = NonNil
 )
 
-func (s nilness) Contains(v any) bool {
-	return bool(s) == isNil(valueOf(v))
-}
-
-func (s nilness) eval(v any) membership {
-	if s.Contains(v) {
-		return membership{
-			IsMember: true,
-			For:      []string{"it " + s.str()},
-		}
-	}
-	return membership{
-		IsMember: false,
-		Against:  []string{"it " + (!s).str()},
-	}
-}
-
 func (s nilness) String() string {
-	return "{ " + s.str() + " }"
+	op := "=="
+	if !s {
+		op = "!="
+	}
+
+	return "{ x | x " + op + " nil }"
 }
 
-func (s nilness) str() string {
-	if s {
-		return "is nil"
-	}
-	return "is non-nil"
+func (s nilness) Contains(v any) bool {
+	r := reflectx.ValueOf(v)
+	return bool(s) == reflectx.IsNil(r)
 }
 
-func isNil(v reflect.Value) bool {
-	switch v.Kind() {
-	default:
-		return false
-	case
-		reflect.Interface,
-		reflect.Pointer,
-		reflect.UnsafePointer,
-		reflect.Slice,
-		reflect.Map,
-		reflect.Func,
-		reflect.Chan:
-		return v.IsNil()
+func (s nilness) eval(v any) evaluation {
+	return newEvaluation(
+		s,
+		v,
+		s.Contains(v),
+		isNil{},
+	)
+}
+
+type isNil struct{}
+
+func (r isNil) String(inverse bool) string {
+	if inverse {
+		return "it is non-nil"
 	}
+	return "it is nil"
 }

@@ -1,60 +1,78 @@
 package akin
 
 import (
-	"fmt"
 	"testing"
+
+	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
-// AssertContains fails the test unless s contains v.
-func AssertContains(t *testing.T, s Set, v any) {
+// AssertIsMember fails the test unless v is a member of s.
+func AssertIsMember(t *testing.T, s Set, v any) {
 	t.Helper()
 
-	m := s.eval(v)
+	t.Logf(
+		"asserting that %q is a member of %q",
+		renderTV(reflectx.ValueOf(v)),
+		s,
+	)
 
-	if !m.IsMember {
-		if len(m.Against) == 0 {
-			panic(fmt.Sprintf(
-				"no reason was provided as to why %s is not a member of %s",
-				renderV(valueOf(v)),
-				s,
-			))
-		}
-
-		for _, r := range m.Against {
-			t.Logf(
-				"expected %s to be a member of %s, but %s",
-				renderV(valueOf(v)),
-				s,
-				r,
-			)
-		}
+	e := s.eval(v)
+	if !e.IsMember {
 		t.Fail()
 	}
+
+	logEvaluation(t, e)
+
 }
 
-// AssertNotContains fails the test if s contains v.
-func AssertNotContains(t *testing.T, s Set, v any) {
+// AssertIsNotMember fails the test if v is a member of s.
+func AssertIsNotMember(t *testing.T, s Set, v any) {
 	t.Helper()
 
-	m := s.eval(v)
+	t.Logf(
+		"asserting that %q is not a member of %q",
+		renderTV(reflectx.ValueOf(v)),
+		s,
+	)
 
-	if m.IsMember {
-		if len(m.For) == 0 {
-			panic(fmt.Sprintf(
-				"no reason was provided as to why %s is a member of %s",
-				renderV(valueOf(v)),
-				s,
-			))
+	e := s.eval(v)
+	if e.IsMember {
+		t.Fail()
+	}
+
+	logEvaluation(t, e)
+}
+
+func logEvaluation(t *testing.T, e evaluation) {
+	t.Helper()
+
+	summarize := true
+
+	for _, p := range e.Predicates {
+		if p.Set == e.Set {
+			summarize = false
 		}
 
-		for _, r := range m.For {
+		if p.Satisfied {
 			t.Logf(
-				"did not expect %s to be a member of %s, but %s",
-				renderV(valueOf(v)),
-				s,
-				r,
+				" - member of %s because %s",
+				p.Set,
+				p.Predicate.String(false),
+			)
+		} else {
+			t.Logf(
+				" - not a member of %s because %s",
+				p.Set,
+				p.Predicate.String(true),
 			)
 		}
-		t.Fail()
+	}
+
+	if summarize {
+		if e.IsMember {
+			t.Logf(" - and therefore it is a member of %s", e.Set)
+		} else {
+			t.Logf(" - and therefore it is not a member of %s", e.Set)
+		}
 	}
 }

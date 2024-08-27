@@ -2,42 +2,31 @@ package akin_test
 
 import (
 	"testing"
-	"unsafe"
 
 	. "github.com/dogmatiq/akin"
 )
 
-// nils contains a nil value for each kind that may be nilable.
-var nils = []any{
-	nil,
-	unsafe.Pointer(nil),
-	(*int)(nil),
-	([]int)(nil),
-	(map[int]int)(nil),
-	(func())(nil),
-	(chan int)(nil),
-}
-
-// nonNils contains a non-nil value for each kind that may be nilable.
-var nonNils = []any{
-	"", // any itself is a nilable type
-	uintptr(0),
-	unsafe.Pointer(new(int)),
-	new(int),
-	[]int{},
-	map[int]int{},
-	func() {},
-	make(chan int),
-}
-
 func TestNilness(t *testing.T) {
-	for _, v := range nils {
-		AssertContains(t, Nil, v)
-		AssertNotContains(t, NonNil, v)
+	for _, c := range nils {
+		t.Run(c.Name, func(t *testing.T) {
+			AssertIsMember(t, Nil, c.Value)
+			AssertIsNotMember(t, NonNil, c.Value)
+		})
 	}
 
-	for _, v := range nonNils {
-		AssertContains(t, NonNil, v)
-		AssertNotContains(t, Nil, v)
+	for _, c := range nonNils {
+		t.Run(c.Name, func(t *testing.T) {
+			AssertIsMember(t, NonNil, c.Value)
+			AssertIsNotMember(t, Nil, c.Value)
+		})
 	}
+}
+
+func TestNilness_uintptr(t *testing.T) {
+	// The zero-valued uintptr is not technically nil, but it is "conceptually"
+	// nil, so it is treated as such when using a model nil value, but not when
+	// using the actual akin.Nil set.
+	AssertIsMember(t, To(nil), uintptr(0))
+	AssertIsNotMember(t, Nil, uintptr(0))
+	AssertIsMember(t, NonNil, uintptr(0))
 }

@@ -4,34 +4,49 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
-func renderV(v reflect.Value) string {
-	rt := renderT(v.Type())
+func renderTV(v reflect.Value) string {
+	t := v.Type()
 
-	if strings.ContainsAny(rt, "*[({") {
+	rv := renderV(v)
+
+	switch t {
+	case reflect.TypeFor[string](),
+		reflect.TypeFor[bool]():
+		return rv
+	}
+
+	rt := renderT(t)
+	if strings.ContainsAny(rt, " *({") {
 		rt = "(" + rt + ")"
 	}
 
-	rv := "nil"
-	if !isNil(v) {
-		rv = fmt.Sprintf("%v", v.Interface())
-	}
-
-	return fmt.Sprintf(
-		"%s(%s)",
-		renderT(v.Type()),
-		rv,
-	)
+	return fmt.Sprintf("%s(%s)", rt, rv)
 }
 
 func renderT(t reflect.Type) string {
 	if t == reflect.TypeFor[any]() {
 		return "any"
 	}
+
 	return strings.ReplaceAll(
 		t.String(),
-		" ",
-		"",
+		" {",
+		"{",
 	)
+}
+
+func renderV(v reflect.Value) string {
+	if v.Kind() == reflect.String {
+		return fmt.Sprintf("%q", v.Interface())
+	}
+
+	if reflectx.IsNil(v) {
+		return "nil"
+	}
+
+	return fmt.Sprintf("%v", v.Interface())
 }

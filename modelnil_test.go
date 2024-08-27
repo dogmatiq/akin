@@ -9,11 +9,15 @@ import (
 func TestTo_nil(t *testing.T) {
 	set := To(nil)
 
-	for _, v := range nils {
-		AssertContains(t, set, v)
+	for _, c := range nils {
+		t.Run(c.Name, func(t *testing.T) {
+			AssertIsMember(t, set, c.Value)
+		})
 	}
 
-	for _, v := range nonNils {
-		AssertNotContains(t, set, v)
+	for _, c := range nonNils {
+		t.Run(c.Name, func(t *testing.T) {
+			AssertIsNotMember(t, set, c.Value)
+		})
 	}
 }
