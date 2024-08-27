@@ -2,7 +2,7 @@
 
 # Akin
 
-A simple fuzzy comparison algorithm for Go.
+A fuzzy comparison algorithm for Go values.
 
 [![Documentation](https://img.shields.io/badge/go.dev-documentation-007d9c?&style=for-the-badge)](https://pkg.go.dev/github.com/dogmatiq/akin)
 [![Latest Version](https://img.shields.io/github/tag/dogmatiq/akin.svg?&style=for-the-badge&label=semver)](https://github.com/dogmatiq/akin/releases)

@@ -9,8 +9,8 @@ import (
 func TestOfType(t *testing.T) {
 	p := OfType[int]()
 
-	AssertSatisfied(t, p, 0)
-	AssertViolated(t, p, uint(0))
-	AssertViolated(t, p, float64(0))
-	AssertViolated(t, p, "0")
+	assertSatisfied(t, p, 0)
+	assertViolated(t, p, uint(0))
+	assertViolated(t, p, float64(0))
+	assertViolated(t, p, "0")
 }

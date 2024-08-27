@@ -1,7 +1,6 @@
 package akin
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/dogmatiq/akin/internal/reflectx"
@@ -13,10 +12,7 @@ func ConvertibleTo(v any) Predicate {
 	r := reflectx.ValueOf(v)
 
 	if !r.Comparable() {
-		panic(fmt.Sprintf(
-			"%s is not comparable",
-			renderT(r.Type()),
-		))
+		panic(reflectx.Sprintf("%s is not comparable", r.Type()))
 	}
 
 	return convertibleTo{r}
@@ -27,7 +23,7 @@ type convertibleTo struct {
 }
 
 func (p convertibleTo) String() string {
-	return "convertible to " + render(p.want)
+	return reflectx.Sprintf("𝑥 = %s", p.want)
 }
 
 func (p convertibleTo) Eval(v any) Evaluation {
@@ -45,8 +41,8 @@ func (p convertibleTo) Eval(v any) Evaluation {
 			p,
 			v,
 			"%s is not convertible to %s",
-			renderT(gotT),
-			renderT(wantT),
+			gotT,
+			wantT,
 		)
 	}
 
@@ -91,6 +87,6 @@ func (p convertibleTo) Is(q Predicate) bool {
 	return false
 }
 
-func (p convertibleTo) Simplify() (Predicate, bool) {
-	return p, false
+func (p convertibleTo) Reduce() Predicate {
+	return p
 }

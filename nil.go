@@ -43,6 +43,6 @@ func (p isNil) Is(q Predicate) bool {
 	return false
 }
 
-func (p isNil) Simplify() (Predicate, bool) {
-	return p, false
+func (p isNil) Reduce() Predicate {
+	return p
 }

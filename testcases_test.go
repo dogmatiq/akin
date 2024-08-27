@@ -1,8 +1,9 @@
 package akin_test
 
 import (
-	"reflect"
 	"unsafe"
+
+	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
 var (
@@ -103,7 +104,7 @@ var (
 	comparable, incomparable = splitCases(
 		all,
 		func(c testCase) bool {
-			return reflect.ValueOf(c.Value).Comparable()
+			return reflectx.ValueOf(c.Value).Comparable()
 		},
 	)
 )

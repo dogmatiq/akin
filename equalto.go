@@ -1,7 +1,6 @@
 package akin
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/dogmatiq/akin/internal/reflectx"
@@ -15,10 +14,7 @@ func EqualTo(v any) Predicate {
 	r := reflectx.ValueOf(v)
 
 	if !r.Comparable() {
-		panic(fmt.Sprintf(
-			"%s is not comparable",
-			renderT(r.Type()),
-		))
+		panic(reflectx.Sprintf("%s is not comparable", r.Type()))
 	}
 
 	return equalTo{r}
@@ -29,7 +25,7 @@ type equalTo struct {
 }
 
 func (p equalTo) String() string {
-	return "equal to " + render(p.want)
+	return reflectx.Sprintf("𝑥 ≡ %s", p.want)
 }
 
 func (p equalTo) Eval(v any) Evaluation {
@@ -57,6 +53,6 @@ func (p equalTo) Is(q Predicate) bool {
 	return false
 }
 
-func (p equalTo) Simplify() (Predicate, bool) {
-	return p, false
+func (p equalTo) Reduce() Predicate {
+	return p
 }

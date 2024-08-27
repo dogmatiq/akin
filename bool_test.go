@@ -7,37 +7,59 @@ import (
 )
 
 func TestBool_model(t *testing.T) {
-	type userDefined bool
+	type casual bool
 	const (
-		userTrue  = userDefined(true)
-		userFalse = userDefined(false)
+		yeah = casual(true)
+		nah  = casual(false)
 	)
 
 	t.Run("built-in true", func(t *testing.T) {
-		AssertSatisfied(t, To(true), true)
-		AssertSatisfied(t, To(true), userTrue)
-		AssertViolated(t, To(true), false)
-		AssertViolated(t, To(true), userFalse)
+		p := To(true)
+
+		assertInvariants(t, p)
+
+		assertSatisfied(t, p, true)
+		assertViolated(t, p, false)
+
+		assertSatisfied(t, p, yeah)
+		assertViolated(t, p, nah)
 	})
 
 	t.Run("built-in false", func(t *testing.T) {
-		AssertSatisfied(t, To(false), false)
-		AssertSatisfied(t, To(false), userFalse)
-		AssertViolated(t, To(false), true)
-		AssertViolated(t, To(false), userTrue)
+		p := To(false)
+
+		assertInvariants(t, p)
+
+		assertSatisfied(t, p, false)
+		assertViolated(t, p, true)
+
+		assertSatisfied(t, p, nah)
+		assertViolated(t, p, yeah)
 	})
 
 	t.Run("user-defined true", func(t *testing.T) {
-		AssertSatisfied(t, To(userTrue), userTrue)
-		AssertViolated(t, To(userTrue), userFalse)
-		AssertViolated(t, To(userTrue), true) // user-defined spec requires types to match
-		AssertViolated(t, To(userTrue), false)
+		p := To(yeah)
+
+		assertInvariants(t, p)
+
+		assertSatisfied(t, p, yeah)
+		assertViolated(t, p, nah)
+
+		// model built from user-defined type requires types to match
+		assertViolated(t, p, true)
+		assertViolated(t, p, false)
 	})
 
 	t.Run("user-defined false", func(t *testing.T) {
-		AssertSatisfied(t, To(userFalse), userFalse)
-		AssertViolated(t, To(userFalse), userTrue)
-		AssertViolated(t, To(userFalse), true)
-		AssertViolated(t, To(userFalse), false) // user-defined spec requires types to match
+		p := To(nah)
+
+		assertInvariants(t, p)
+
+		assertSatisfied(t, p, nah)
+		assertViolated(t, p, yeah)
+
+		// model built from user-defined type requires types to match
+		assertViolated(t, p, true)
+		assertViolated(t, p, false)
 	})
 }

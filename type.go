@@ -2,6 +2,8 @@ package akin
 
 import (
 	"reflect"
+
+	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
 // OfType returns a [Predicate] that is satisfied by any value of type T.
@@ -14,7 +16,7 @@ type ofType struct {
 }
 
 func (s ofType) String() string {
-	return "of type " + renderT(s.want)
+	return reflectx.Sprintf("𝑥 ⦂ %s", s.want)
 }
 
 func (s ofType) Eval(v any) Evaluation {
@@ -32,6 +34,6 @@ func (s ofType) Is(q Predicate) bool {
 	return false
 }
 
-func (s ofType) Simplify() (Predicate, bool) {
-	return s, false
+func (s ofType) Reduce() Predicate {
+	return s
 }

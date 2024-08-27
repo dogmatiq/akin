@@ -1,18 +1,18 @@
 package akin
 
 const (
-	// Anything is a [Predicate] that is satisfied by any value.
-	Anything constant = true
+	// Top is a [Predicate] that is satisfied by any value.
+	Top constant = true
 
-	// Nothing is a [Predicate] that is not satisfied by any values.
-	Nothing constant = false
+	// Bottom is a [Predicate] that is not satisfied by any values.
+	Bottom constant = false
 )
 
 type constant bool
 
 var (
-	_ Predicate = Anything
-	_ Predicate = Nothing
+	_ Predicate = Top
+	_ Predicate = Bottom
 )
 
 func (p constant) String() string {
@@ -30,12 +30,9 @@ func (p constant) Eval(v any) Evaluation {
 }
 
 func (p constant) Is(q Predicate) bool {
-	if q, ok := q.(constant); ok {
-		return p == q
-	}
-	return false
+	return equal(p, q)
 }
 
-func (p constant) Simplify() (Predicate, bool) {
-	return p, false
+func (p constant) Reduce() Predicate {
+	return p
 }

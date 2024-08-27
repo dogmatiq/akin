@@ -1,6 +1,6 @@
 package akin
 
-import "fmt"
+import "github.com/dogmatiq/akin/internal/reflectx"
 
 // Evaluation is the result of evaluating a value against a [Predicate].
 type Evaluation struct {
@@ -16,7 +16,7 @@ func satisfied(p Predicate, v any, format string, args ...any) Evaluation {
 		Predicate:   p,
 		Value:       v,
 		IsSatisfied: true,
-		Reason:      fmt.Sprintf(format, args...),
+		Reason:      reflectx.Sprintf(format, args...),
 	}
 }
 
@@ -24,6 +24,6 @@ func violated(p Predicate, v any, format string, args ...any) Evaluation {
 	return Evaluation{
 		Predicate: p,
 		Value:     v,
-		Reason:    fmt.Sprintf(format, args...),
+		Reason:    reflectx.Sprintf(format, args...),
 	}
 }
