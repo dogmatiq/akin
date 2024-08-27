@@ -15,16 +15,20 @@ var (
 	_ Predicate = Nothing
 )
 
-func (s constant) String() string {
-	if s {
+func (p constant) String() string {
+	if p {
 		return "⊤"
 	}
 	return "⊥"
 }
 
-func (s constant) Eval(v any) Evaluation {
-	if s {
-		return satisfied(s, v, "all values satisfy %s", s)
+func (p constant) Eval(v any) Evaluation {
+	if p {
+		return satisfied(p, v, "all values satisfy %s", p)
 	}
-	return violated(s, v, "no values satisfy %s", s)
+	return violated(p, v, "no values satisfy %s", p)
+}
+
+func (p constant) Simplify() (Predicate, bool) {
+	return p, false
 }

@@ -10,17 +10,21 @@ func OfType[T any]() Predicate {
 }
 
 type ofType struct {
-	t reflect.Type
+	want reflect.Type
 }
 
 func (s ofType) String() string {
-	return "of type " + renderT(s.t)
+	return "of type " + renderT(s.want)
 }
 
 func (s ofType) Eval(v any) Evaluation {
 	t := reflect.TypeOf(v)
-	if t == s.t {
-		return satisfied(s, v, "the value has the same type")
+	if t == s.want {
+		return satisfied(s, v, "the value is of the expected type")
 	}
-	return violated(s, v, "the value has a different type")
+	return violated(s, v, "the value is not of the expected type")
+}
+
+func (s ofType) Simplify() (Predicate, bool) {
+	return s, false
 }

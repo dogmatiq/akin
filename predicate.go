@@ -13,6 +13,15 @@ type Predicate interface {
 
 	// Eval evaluates v against the predicate.
 	Eval(v any) Evaluation
+
+	// Simplify returns the simplest possible predicate that is equivalent to
+	// this predicate.
+	//
+	// p is always a non-nil predicate, even if it is the same predicate.
+	//
+	// simplified is true if the predicate was simplified, or false if the same
+	// predicate was returned.
+	Simplify() (p Predicate, simplified bool)
 }
 
 // To returns a [Predicate] that matches values that are "akin to" the given

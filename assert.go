@@ -10,6 +10,11 @@ import (
 func AssertSatisfied(t *testing.T, p Predicate, v any) {
 	t.Helper()
 
+	if s, ok := p.Simplify(); ok {
+		t.Logf("simplified %q to %q", p, s)
+		p = s
+	}
+
 	e := p.Eval(v)
 
 	if e.IsSatisfied {
@@ -36,6 +41,11 @@ func AssertSatisfied(t *testing.T, p Predicate, v any) {
 // AssertViolated fails the test if v satisfies p.
 func AssertViolated(t *testing.T, p Predicate, v any) {
 	t.Helper()
+
+	if s, ok := p.Simplify(); ok {
+		t.Logf("simplified %q to %q", p, s)
+		p = s
+	}
 
 	e := p.Eval(v)
 

@@ -25,27 +25,31 @@ func EqualTo(v any) Predicate {
 }
 
 type equalTo struct {
-	v reflect.Value
+	want reflect.Value
 }
 
 func (p equalTo) String() string {
-	return "equal to " + render(p.v)
+	return "equal to " + render(p.want)
 }
 
 func (p equalTo) Eval(v any) Evaluation {
 	r := reflectx.ValueOf(v)
 
-	if r.Type() != p.v.Type() {
+	if r.Type() != p.want.Type() {
 		return violated(
 			p,
 			v,
-			"the value has a different type",
+			"the values have different types",
 		)
 	}
 
-	if !r.Equal(p.v) {
-		return violated(p, v, "the value is not equal")
+	if !r.Equal(p.want) {
+		return violated(p, v, "the values are not equal")
 	}
 
-	return satisfied(p, v, "the value is equal")
+	return satisfied(p, v, "the values are equal")
+}
+
+func (p equalTo) Simplify() (Predicate, bool) {
+	return p, false
 }

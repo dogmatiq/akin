@@ -19,19 +19,23 @@ var (
 	_ Predicate = IsNonNil
 )
 
-func (s isNil) String() string {
-	if s {
+func (p isNil) String() string {
+	if p {
 		return "is nil"
 	}
 	return "is non-nil"
 }
 
-func (s isNil) Eval(v any) Evaluation {
+func (p isNil) Eval(v any) Evaluation {
 	r := reflectx.ValueOf(v)
 
-	if reflectx.IsNil(r) == bool(s) {
-		return satisfied(s, v, "the value %s", s)
+	if reflectx.IsNil(r) == bool(p) {
+		return satisfied(p, v, "the value %s", p)
 	}
 
-	return violated(s, v, "the value %s", !s)
+	return violated(p, v, "the value %s", !p)
+}
+
+func (p isNil) Simplify() (Predicate, bool) {
+	return p, false
 }

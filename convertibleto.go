@@ -56,25 +56,14 @@ func (p convertibleTo) Eval(v any) Evaluation {
 	case gotT.Kind() == reflect.Slice &&
 		wantT.Kind() == reflect.Array:
 		if wantT.Len() > got.Len() {
-			return violated(
-				p,
-				v,
-				"the slice is too short to convert to an array of length %d",
-				wantT.Len(),
-			)
+			return violated(p, v, "the value only has %d elements", got.Len())
 		}
 
 	case gotT.Kind() == reflect.Slice &&
 		wantT.Kind() == reflect.Pointer &&
 		wantT.Elem().Kind() == reflect.Array:
-		n := wantT.Elem().Len()
-		if n > p.want.Len() {
-			return violated(
-				p,
-				v,
-				"the slice is too short to convert to an array of length %d",
-				n,
-			)
+		if wantT.Elem().Len() > got.Len() {
+			return violated(p, v, "the value only has %d elements", got.Len())
 		}
 	}
 
@@ -94,4 +83,8 @@ func (p convertibleTo) Eval(v any) Evaluation {
 	}
 
 	return violated(p, v, "the values are not equal after conversion")
+}
+
+func (p convertibleTo) Simplify() (Predicate, bool) {
+	return p, false
 }
