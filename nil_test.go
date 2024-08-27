@@ -6,7 +6,13 @@ import (
 	. "github.com/dogmatiq/akin"
 )
 
-func TestNil(t *testing.T) {
+func TestIsNil(t *testing.T) {
+	assertInvariants(t, IsNil)
+	assertInvariants(t, IsNonNil)
+
+	assertIsReduced(t, IsNil)
+	assertIsReduced(t, IsNonNil)
+
 	for _, c := range nils {
 		t.Run(c.Name, func(t *testing.T) {
 			assertSatisfied(t, IsNil, c.Value)
@@ -20,29 +26,4 @@ func TestNil(t *testing.T) {
 			assertViolated(t, IsNil, c.Value)
 		})
 	}
-}
-
-func TestNil_model(t *testing.T) {
-	p := To(nil)
-
-	for _, c := range nils {
-		t.Run(c.Name, func(t *testing.T) {
-			assertSatisfied(t, p, c.Value)
-		})
-	}
-
-	for _, c := range nonNils {
-		t.Run(c.Name, func(t *testing.T) {
-			assertViolated(t, p, c.Value)
-		})
-	}
-}
-
-func TestNil_uintptr(t *testing.T) {
-	// The zero-valued uintptr is not technically nil, but it is "conceptually"
-	// nil, so it is treated as such when using a predicate produced by a model
-	// nil value, but not when using the actual [IsNil] predicate.
-	assertSatisfied(t, To(nil), uintptr(0))
-	assertViolated(t, IsNil, uintptr(0))
-	assertSatisfied(t, IsNonNil, uintptr(0))
 }

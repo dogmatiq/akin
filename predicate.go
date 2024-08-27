@@ -23,7 +23,7 @@ type Predicate interface {
 	Reduce() Predicate
 }
 
-func sameConstituents[S ~[]Predicate](a, b S) bool {
+func samePredicates[S ~[]Predicate](a, b S) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -45,17 +45,6 @@ func sameConstituents[S ~[]Predicate](a, b S) bool {
 	return true
 }
 
-func hasConstituent[S ~[]Predicate](p S, q Predicate) bool {
+func containsPredicate[S ~[]Predicate](p S, q Predicate) bool {
 	return slices.IndexFunc(p, q.Is) != -1
-}
-
-// equal returns true if q has type P and compares as equal to p.
-func equal[P interface {
-	comparable
-	Predicate
-}](p P, q Predicate) bool {
-	if q, ok := q.(P); ok {
-		return p == q
-	}
-	return false
 }

@@ -6,7 +6,7 @@ import (
 	. "github.com/dogmatiq/akin"
 )
 
-func TestBool_model(t *testing.T) {
+func TestModel_bool(t *testing.T) {
 	type casual bool
 	const (
 		yeah = casual(true)
@@ -14,7 +14,7 @@ func TestBool_model(t *testing.T) {
 	)
 
 	t.Run("built-in true", func(t *testing.T) {
-		p := To(true)
+		p := Model(true)
 
 		assertInvariants(t, p)
 
@@ -26,7 +26,7 @@ func TestBool_model(t *testing.T) {
 	})
 
 	t.Run("built-in false", func(t *testing.T) {
-		p := To(false)
+		p := Model(false)
 
 		assertInvariants(t, p)
 
@@ -38,7 +38,7 @@ func TestBool_model(t *testing.T) {
 	})
 
 	t.Run("user-defined true", func(t *testing.T) {
-		p := To(yeah)
+		p := Model(yeah)
 
 		assertInvariants(t, p)
 
@@ -51,7 +51,7 @@ func TestBool_model(t *testing.T) {
 	})
 
 	t.Run("user-defined false", func(t *testing.T) {
-		p := To(nah)
+		p := Model(nah)
 
 		assertInvariants(t, p)
 

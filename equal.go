@@ -6,29 +6,29 @@ import (
 	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
-// EqualTo returns a [Predicate] that is satisfied by any value that compares as
-// equal to v.
+// Equal returns a [Predicate] that is satisfied by any value that compares as
+// equal to v using the == operator.
 //
 // It panics if v is not comparable type.
-func EqualTo(v any) Predicate {
+func Equal(v any) Predicate {
 	r := reflectx.ValueOf(v)
 
 	if !r.Comparable() {
 		panic(reflectx.Sprintf("%s is not comparable", r.Type()))
 	}
 
-	return equalTo{r}
+	return equal{r}
 }
 
-type equalTo struct {
+type equal struct {
 	want reflect.Value
 }
 
-func (p equalTo) String() string {
+func (p equal) String() string {
 	return reflectx.Sprintf("𝑥 ≡ %s", p.want)
 }
 
-func (p equalTo) Eval(v any) Evaluation {
+func (p equal) Eval(v any) Evaluation {
 	r := reflectx.ValueOf(v)
 
 	if r.Type() != p.want.Type() {
@@ -46,13 +46,13 @@ func (p equalTo) Eval(v any) Evaluation {
 	return satisfied(p, v, "the values are equal")
 }
 
-func (p equalTo) Is(q Predicate) bool {
-	if q, ok := q.(equalTo); ok {
+func (p equal) Is(q Predicate) bool {
+	if q, ok := q.(equal); ok {
 		return p.want.Interface() == q.want.Interface()
 	}
 	return false
 }
 
-func (p equalTo) Reduce() Predicate {
+func (p equal) Reduce() Predicate {
 	return p
 }

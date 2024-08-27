@@ -51,7 +51,7 @@ func (p or) Eval(v any) Evaluation {
 
 func (p or) Is(q Predicate) bool {
 	if q, ok := q.(or); ok {
-		return sameConstituents(p, q)
+		return samePredicates(p, q)
 	}
 	return false
 }
@@ -76,7 +76,7 @@ func (p or) Reduce() Predicate {
 				continue
 			}
 
-			if hasConstituent(reduced, c) {
+			if containsPredicate(reduced, c) {
 				continue
 			}
 

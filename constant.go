@@ -30,7 +30,7 @@ func (p constant) Eval(v any) Evaluation {
 }
 
 func (p constant) Is(q Predicate) bool {
-	return equal(p, q)
+	return p == q
 }
 
 func (p constant) Reduce() Predicate {

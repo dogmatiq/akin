@@ -6,19 +6,22 @@ import (
 	. "github.com/dogmatiq/akin"
 )
 
-func TestSingleton(t *testing.T) {
-	t.Run("concrete value", func(t *testing.T) {
-		p := EqualTo(1)
+func TestEqualTo(t *testing.T) {
+	p := Equal(1)
 
-		assertSatisfied(t, p, 1)
-		assertViolated(t, p, 0)
-		assertViolated(t, p, uint(1))
-		assertViolated(t, p, float64(1))
-	})
+	assertInvariants(t, p)
+
+	assertSatisfied(t, p, 1)
+
+	assertViolated(t, p, 0)
+	assertViolated(t, p, uint(1))
+	assertViolated(t, p, float64(1))
+
+	assertIsReduced(t, p)
 
 	for i1, c1 := range comparable {
 		t.Run(c1.Name, func(t *testing.T) {
-			p := EqualTo(c1.Value)
+			p := Equal(c1.Value)
 
 			for i2, c2 := range comparable {
 				t.Run(c2.Name, func(t *testing.T) {

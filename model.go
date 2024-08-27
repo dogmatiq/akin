@@ -6,16 +6,16 @@ import (
 	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
-// To returns a [Predicate] that matches values that are "akin to" the given
+// Model returns a [Predicate] that matches values that are "akin to" the given
 // model value.
-func To(model any) Predicate {
+func Model(model any) Predicate {
 	v := reflectx.ValueOf(model)
 	return fromModel(v)
 }
 
 func fromModel(v reflect.Value) Predicate {
 	if v.Type().PkgPath() != "" {
-		return equalTo{v}
+		return equal{v}
 	}
 
 	switch v.Kind() {
@@ -25,7 +25,7 @@ func fromModel(v reflect.Value) Predicate {
 
 	case reflect.Interface:
 		if v.Type() == reflect.TypeFor[any]() && v.IsNil() {
-			return Or(IsNil, EqualTo(uintptr(0)))
+			return Or(IsNil, Equal(uintptr(0)))
 		}
 
 	case reflect.Map:
@@ -35,5 +35,5 @@ func fromModel(v reflect.Value) Predicate {
 	case reflect.Struct:
 	}
 
-	return convertibleTo{v}
+	return equivalent{v}
 }

@@ -14,33 +14,30 @@ const (
 
 type isNil bool
 
-var (
-	_ Predicate = IsNil
-	_ Predicate = IsNonNil
-)
-
 func (p isNil) String() string {
 	if p {
-		return "is nil"
+		return "𝑥 = nil"
 	}
-	return "is non-nil"
+	return "𝑥 ≠ nil"
 }
 
 func (p isNil) Eval(v any) Evaluation {
 	r := reflectx.ValueOf(v)
 
-	if reflectx.IsNil(r) == bool(p) {
-		return satisfied(p, v, "the value %s", p)
+	good, bad := "nil", "non-nil"
+	if !p {
+		good, bad = bad, good
 	}
 
-	return violated(p, v, "the value %s", !p)
+	if reflectx.IsNil(r) == bool(p) {
+		return satisfied(p, v, "the value is %s", good)
+	}
+
+	return violated(p, v, "the value is %s", bad)
 }
 
 func (p isNil) Is(q Predicate) bool {
-	if q, ok := q.(isNil); ok {
-		return p == q
-	}
-	return false
+	return p == q
 }
 
 func (p isNil) Reduce() Predicate {
