@@ -25,6 +25,13 @@ func (s ofType) Eval(v any) Evaluation {
 	return violated(s, v, "the value is not of the expected type")
 }
 
+func (s ofType) Is(q Predicate) bool {
+	if q, ok := q.(ofType); ok {
+		return s.want == q.want
+	}
+	return false
+}
+
 func (s ofType) Simplify() (Predicate, bool) {
 	return s, false
 }

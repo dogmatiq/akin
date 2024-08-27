@@ -77,12 +77,18 @@ func (p convertibleTo) Eval(v any) Evaluation {
 		)
 	}
 
-	conv := got.Convert(wantT)
-	if conv.Equal(p.want) {
+	if got.Convert(wantT).Interface() == p.want.Interface() {
 		return satisfied(p, v, "the values are equal after conversion")
 	}
 
 	return violated(p, v, "the values are not equal after conversion")
+}
+
+func (p convertibleTo) Is(q Predicate) bool {
+	if q, ok := q.(convertibleTo); ok {
+		return p.want.Interface() == q.want.Interface()
+	}
+	return false
 }
 
 func (p convertibleTo) Simplify() (Predicate, bool) {

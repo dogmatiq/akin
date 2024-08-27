@@ -29,6 +29,13 @@ func (p constant) Eval(v any) Evaluation {
 	return violated(p, v, "no values satisfy %s", p)
 }
 
+func (p constant) Is(q Predicate) bool {
+	if q, ok := q.(constant); ok {
+		return p == q
+	}
+	return false
+}
+
 func (p constant) Simplify() (Predicate, bool) {
 	return p, false
 }

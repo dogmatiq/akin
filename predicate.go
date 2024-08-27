@@ -3,6 +3,7 @@ package akin
 import (
 	"fmt"
 	"reflect"
+	"slices"
 
 	"github.com/dogmatiq/akin/internal/reflectx"
 )
@@ -14,14 +15,14 @@ type Predicate interface {
 	// Eval evaluates v against the predicate.
 	Eval(v any) Evaluation
 
-	// Simplify returns the simplest possible predicate that is equivalent to
-	// this predicate.
+	// Is returns true if p is the same as this predicate.
+	Is(p Predicate) bool
+
+	// Simplify returns the simplest equivalent of this predicate.
 	//
-	// p is always a non-nil predicate, even if it is the same predicate.
-	//
-	// simplified is true if the predicate was simplified, or false if the same
-	// predicate was returned.
-	Simplify() (p Predicate, simplified bool)
+	// It always returns a non-nil predicate, even if it's the same predicate.
+	// It returns true if any simplification was possible.
+	Simplify() (Predicate, bool)
 }
 
 // To returns a [Predicate] that matches values that are "akin to" the given
@@ -54,4 +55,30 @@ func fromModel(v reflect.Value) Predicate {
 	}
 
 	return convertibleTo{v}
+}
+
+func sameConstituents[S ~[]Predicate](a, b S) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	b = slices.Clone(b)
+	n := len(b)
+
+	for _, p := range a {
+		i := slices.IndexFunc(b, p.Is)
+		if i == -1 {
+			return false
+		}
+
+		n--
+		b[i] = b[n]
+		b = b[:n]
+	}
+
+	return true
+}
+
+func hasConstituent[S ~[]Predicate](a S, p Predicate) bool {
+	return slices.IndexFunc(a, p.Is) != -1
 }

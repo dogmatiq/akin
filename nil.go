@@ -36,6 +36,13 @@ func (p isNil) Eval(v any) Evaluation {
 	return violated(p, v, "the value %s", !p)
 }
 
+func (p isNil) Is(q Predicate) bool {
+	if q, ok := q.(isNil); ok {
+		return p == q
+	}
+	return false
+}
+
 func (p isNil) Simplify() (Predicate, bool) {
 	return p, false
 }

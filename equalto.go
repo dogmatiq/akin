@@ -43,11 +43,18 @@ func (p equalTo) Eval(v any) Evaluation {
 		)
 	}
 
-	if !r.Equal(p.want) {
+	if v != p.want.Interface() {
 		return violated(p, v, "the values are not equal")
 	}
 
 	return satisfied(p, v, "the values are equal")
+}
+
+func (p equalTo) Is(q Predicate) bool {
+	if q, ok := q.(equalTo); ok {
+		return p.want.Interface() == q.want.Interface()
+	}
+	return false
 }
 
 func (p equalTo) Simplify() (Predicate, bool) {
