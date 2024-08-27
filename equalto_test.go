@@ -8,24 +8,24 @@ import (
 
 func TestSingleton(t *testing.T) {
 	t.Run("concrete value", func(t *testing.T) {
-		set := Singleton(1)
+		p := EqualTo(1)
 
-		AssertIsMember(t, set, 1)
-		AssertIsNotMember(t, set, 0)
-		AssertIsNotMember(t, set, uint(1))
-		AssertIsNotMember(t, set, float64(1))
+		AssertSatisfied(t, p, 1)
+		AssertViolated(t, p, 0)
+		AssertViolated(t, p, uint(1))
+		AssertViolated(t, p, float64(1))
 	})
 
 	for i1, c1 := range comparable {
 		t.Run(c1.Name, func(t *testing.T) {
-			set := Singleton(c1.Value)
+			p := EqualTo(c1.Value)
 
 			for i2, c2 := range comparable {
 				t.Run(c2.Name, func(t *testing.T) {
 					if i1 == i2 {
-						AssertIsMember(t, set, c2.Value)
+						AssertSatisfied(t, p, c2.Value)
 					} else {
-						AssertIsNotMember(t, set, c2.Value)
+						AssertViolated(t, p, c2.Value)
 					}
 				})
 			}

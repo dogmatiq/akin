@@ -8,7 +8,7 @@ import (
 	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
-func renderTV(v reflect.Value) string {
+func render(v reflect.Value) string {
 	t := v.Type()
 
 	rv := renderV(v)
