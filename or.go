@@ -30,19 +30,19 @@ func (p or) Eval(v any) Evaluation {
 
 	for _, c := range p {
 		ce := c.Eval(v)
-		pe.Constituents = append(pe.Constituents, ce)
+		pe.Constituents = append(pe.Constituents, ConstituentEvaluation{ce})
 
 		if ce.IsSatisfied && !pe.IsSatisfied {
 			pe.IsSatisfied = true
-			pe.Reason = fmt.Sprintf("the constituent predicate %s is satisfied, because %s", c, ce.Reason)
+			pe.Description = fmt.Sprintf("the constituent predicate %s is satisfied, because %s", c, ce.Description)
 		}
 	}
 
 	if !pe.IsSatisfied {
 		if len(p) == 0 {
-			pe.Reason = "there are no constituent predicates"
+			pe.Description = "there are no constituent predicates"
 		} else {
-			pe.Reason = "none of the constituent predicates are satisfied"
+			pe.Description = "none of the constituent predicates are satisfied"
 		}
 	}
 

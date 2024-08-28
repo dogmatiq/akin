@@ -4,37 +4,36 @@ import (
 	"testing"
 
 	. "github.com/dogmatiq/akin"
+	"github.com/dogmatiq/akin/internal/assert"
 )
 
 func TestOr(t *testing.T) {
-	q := IsEqualTo(1)
-	r := IsEqualTo(2)
+	p1 := IsEqualTo(1)
+	p2 := IsEqualTo(2)
 
-	p := Or(q, r)
+	unary := Or(p1)
+	binary := Or(p1, p2)
+	redundant := Or(p1, p1)
 
-	assertInvariants(t, p)
-	assertInvariants(t, Or())
-	assertInvariants(t, Or(q))
+	assert.Satisfied(t, binary, 1)
+	assert.Satisfied(t, binary, 2)
+	assert.Violated(t, binary, 3)
 
-	assertSatisfied(t, p, 1)
-	assertSatisfied(t, p, 2)
-	assertViolated(t, p, 3)
+	assert.Is(t, Or(p2, p1), binary)
+	assert.IsNot(t, binary, unary)
 
-	assertEquivalent(t, Or(q, r), Or(r, q))
-	assertNotEquivalent(t, Or(q), Or(q, r))
+	assert.ReducesTo(t, Or(), Bottom)
+	assert.ReducesTo(t, Or(Bottom), Bottom)
 
-	assertReducesTo(t, Bottom, Or())
-	assertReducesTo(t, Bottom, Or(Bottom))
+	assert.ReducesTo(t, Or(Top), Top)
+	assert.ReducesTo(t, Or(Top, p1), Top)
+	assert.ReducesTo(t, Or(p1, Top), Top)
 
-	assertReducesTo(t, Top, Or(Top))
-	assertReducesTo(t, Top, Or(Top, q))
-	assertReducesTo(t, Top, Or(q, Top))
+	assert.ReducesTo(t, unary, p1)
+	assert.ReducesTo(t, redundant, p1)
+	assert.IsReduced(t, binary)
 
-	assertReducesTo(t, q, Or(q))
-	assertReducesTo(t, q, Or(q, q))
-	assertIsReduced(t, Or(q, r))
-
-	assertReducesTo(t, q, Or(q, Or(q, q)))
-	assertReducesTo(t, Or(q, r), Or(q, Or(r)))
-	assertReducesTo(t, Or(q, r), Or(q, Or(q, r)))
+	assert.ReducesTo(t, Or(p1, redundant), p1)
+	assert.ReducesTo(t, Or(p2, unary), binary)
+	assert.ReducesTo(t, Or(p1, binary), binary)
 }

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	. "github.com/dogmatiq/akin"
+	"github.com/dogmatiq/akin/internal/assert"
 )
 
 func TestTo_bool(t *testing.T) {
@@ -16,50 +17,42 @@ func TestTo_bool(t *testing.T) {
 	t.Run("built-in true", func(t *testing.T) {
 		p := To(true)
 
-		assertInvariants(t, p)
+		assert.Satisfied(t, p, true)
+		assert.Violated(t, p, false)
 
-		assertSatisfied(t, p, true)
-		assertViolated(t, p, false)
-
-		assertSatisfied(t, p, yeah)
-		assertViolated(t, p, nah)
+		assert.Satisfied(t, p, yeah)
+		assert.Violated(t, p, nah)
 	})
 
 	t.Run("built-in false", func(t *testing.T) {
 		p := To(false)
 
-		assertInvariants(t, p)
+		assert.Satisfied(t, p, false)
+		assert.Violated(t, p, true)
 
-		assertSatisfied(t, p, false)
-		assertViolated(t, p, true)
-
-		assertSatisfied(t, p, nah)
-		assertViolated(t, p, yeah)
+		assert.Satisfied(t, p, nah)
+		assert.Violated(t, p, yeah)
 	})
 
 	t.Run("user-defined true", func(t *testing.T) {
 		p := To(yeah)
 
-		assertInvariants(t, p)
-
-		assertSatisfied(t, p, yeah)
-		assertViolated(t, p, nah)
+		assert.Satisfied(t, p, yeah)
+		assert.Violated(t, p, nah)
 
 		// model built from user-defined type requires types to match
-		assertViolated(t, p, true)
-		assertViolated(t, p, false)
+		assert.Violated(t, p, true)
+		assert.Violated(t, p, false)
 	})
 
 	t.Run("user-defined false", func(t *testing.T) {
 		p := To(nah)
 
-		assertInvariants(t, p)
-
-		assertSatisfied(t, p, nah)
-		assertViolated(t, p, yeah)
+		assert.Satisfied(t, p, nah)
+		assert.Violated(t, p, yeah)
 
 		// model built from user-defined type requires types to match
-		assertViolated(t, p, true)
-		assertViolated(t, p, false)
+		assert.Violated(t, p, true)
+		assert.Violated(t, p, false)
 	})
 }

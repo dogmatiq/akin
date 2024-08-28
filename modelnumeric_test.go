@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	. "github.com/dogmatiq/akin"
+	"github.com/dogmatiq/akin/internal/assert"
 	"github.com/dogmatiq/akin/internal/testcase"
 )
 
@@ -33,14 +34,14 @@ func TestTo_numeric(t *testing.T) {
 		userComplex64(1), userComplex128(1),
 		userUintptr(1),
 	} {
-		assertIsOrReducesTo(t, IsEqualTo(v), To(v))
+		assert.IsOrReducesTo(t, To(v), IsEqualTo(v))
 	}
 
 	for _, cases := range []testcase.Set{testcase.Zero, testcase.Pos, testcase.Neg} {
 		for _, c1 := range cases {
 			p := To(c1.Value)
 			for _, c2 := range cases {
-				assertSatisfied(t, p, c2.Value)
+				assert.Satisfied(t, p, c2.Value)
 			}
 		}
 	}
