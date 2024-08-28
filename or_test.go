@@ -7,8 +7,8 @@ import (
 )
 
 func TestOr(t *testing.T) {
-	q := Equal(1)
-	r := Equal(2)
+	q := IsEqualTo(1)
+	r := IsEqualTo(2)
 
 	p := Or(q, r)
 

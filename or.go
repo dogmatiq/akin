@@ -34,15 +34,15 @@ func (p or) Eval(v any) Evaluation {
 
 		if ce.IsSatisfied && !pe.IsSatisfied {
 			pe.IsSatisfied = true
-			pe.Reason = fmt.Sprintf("the constituent %q is satisfied", c)
+			pe.Reason = fmt.Sprintf("the constituent predicate %s is satisfied, because %s", c, ce.Reason)
 		}
 	}
 
 	if !pe.IsSatisfied {
 		if len(p) == 0 {
-			pe.Reason = "there are no constituents"
+			pe.Reason = "there are no constituent predicates"
 		} else {
-			pe.Reason = "none of the constituents are satisfied"
+			pe.Reason = "none of the constituent predicates are satisfied"
 		}
 	}
 

@@ -1,6 +1,7 @@
 package akin_test
 
 import (
+	"reflect"
 	"unsafe"
 
 	"github.com/dogmatiq/akin/internal/reflectx"
@@ -84,8 +85,8 @@ var (
 		{"positive uint64", uint64(1)},
 		{"positive float32", float32(1)},
 		{"positive float64", float64(1)},
-		{"positive complex64", complex64(1)},
-		{"positive complex128", complex128(1)},
+		{"positive complex64", complex(float32(1), 0)},
+		{"positive complex128", complex(float64(1), 0)},
 		{"positive uintptr", uintptr(1)},
 	}
 
@@ -97,24 +98,41 @@ var (
 		{"negative int64", int64(-1)},
 		{"negative float32", float32(-1)},
 		{"negative float64", float64(-1)},
-		{"negative complex64", complex64(-1)},
-		{"negative complex128", complex128(-1)},
+		{"negative complex64", complex(float32(-1), 0)},
+		{"negative complex128", complex(float64(-1), 0)},
 	}
 
-	comparable, incomparable = splitCases(
-		all,
-		func(c testCase) bool {
-			return reflectx.ValueOf(c.Value).Comparable()
-		},
-	)
+	comparable, incomparable = all.Split(reflect.Value.Comparable)
 )
+
+type testCases []testCase
+
+func (cc testCases) Split(
+	p func(reflect.Value) bool,
+) (in, ex testCases) {
+	for _, c := range cc {
+		if p(reflectx.ValueOf(c.Value)) {
+			in = append(in, c)
+		} else {
+			ex = append(ex, c)
+		}
+	}
+	return in, ex
+}
+
+func (cc testCases) Filter(
+	p func(reflect.Value) bool,
+) testCases {
+	cc, _ = cc.Split(p)
+	return cc
+}
 
 type testCase struct {
 	Name  string
 	Value any
 }
 
-func joinCases(cases ...[]testCase) []testCase {
+func joinCases[S ~[]testCase](cases ...S) testCases {
 	seen := map[string]struct{}{}
 	var out []testCase
 
@@ -128,19 +146,4 @@ func joinCases(cases ...[]testCase) []testCase {
 	}
 
 	return out
-}
-
-func splitCases(
-	cases []testCase,
-	p func(testCase) bool,
-) (in, out []testCase) {
-	for _, c := range cases {
-		if p(c) {
-			in = append(in, c)
-		} else {
-			out = append(out, c)
-		}
-	}
-
-	return in, out
 }

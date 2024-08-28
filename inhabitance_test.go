@@ -6,8 +6,8 @@ import (
 	. "github.com/dogmatiq/akin"
 )
 
-func TestOfType(t *testing.T) {
-	p := OfType[int]()
+func TestInhabitance(t *testing.T) {
+	p := InhabitsType[int]()
 
 	assertSatisfied(t, p, 0)
 	assertViolated(t, p, uint(0))

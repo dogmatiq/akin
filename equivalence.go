@@ -6,28 +6,28 @@ import (
 	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
-// EquivalentTo returns a [Predicate] that is satisfied by any value that
+// IsEquivalentTo returns a [Predicate] that is satisfied by any value that
 // compares as equal to v when converted to the same type, provided it can be
 // converted back to the original type without loss of information.
-func EquivalentTo(v any) Predicate {
+func IsEquivalentTo(v any) Predicate {
 	r := reflectx.ValueOf(v)
 
 	if !r.Comparable() {
 		panic(reflectx.Sprintf("%s is not comparable", r.Type()))
 	}
 
-	return equivalent{r}
+	return equivalence{r}
 }
 
-type equivalent struct {
+type equivalence struct {
 	want reflect.Value
 }
 
-func (p equivalent) String() string {
-	return reflectx.Sprintf("𝑥 = %s", p.want)
+func (p equivalence) String() string {
+	return reflectx.Sprintf("𝑥 ≅ %s", p.want)
 }
 
-func (p equivalent) Eval(v any) Evaluation {
+func (p equivalence) Eval(v any) Evaluation {
 	got := reflectx.ValueOf(v)
 
 	gotT := got.Type()
@@ -35,9 +35,9 @@ func (p equivalent) Eval(v any) Evaluation {
 
 	if gotT == wantT {
 		if v == p.want.Interface() {
-			return satisfied(p, v, "the values are equal")
+			return satisfied(p, v, "𝑥 has the same type and value as %s", p.want)
 		}
-		return violated(p, v, "the values have the same type but are not equal")
+		return violated(p, v, "𝑥 does not have the same value as %s", p.want)
 	}
 
 	// Check that we can convert the value to the predicate's value.
@@ -45,7 +45,7 @@ func (p equivalent) Eval(v any) Evaluation {
 		return violated(
 			p,
 			v,
-			"%s values cannot be converted to %s",
+			"values of type %s cannot be converted to %s",
 			gotT,
 			wantT,
 		)
@@ -56,7 +56,7 @@ func (p equivalent) Eval(v any) Evaluation {
 		return violated(
 			p,
 			v,
-			"%s values cannot be converted to %s",
+			"values of type %s cannot be converted to %s",
 			wantT,
 			gotT,
 		)
@@ -73,7 +73,7 @@ func (p equivalent) Eval(v any) Evaluation {
 		return violated(
 			p,
 			v,
-			"this specific value can not be converted to %s",
+			"𝑥 can not be converted to type %s",
 			wantT,
 		)
 	}
@@ -81,29 +81,28 @@ func (p equivalent) Eval(v any) Evaluation {
 	converted := got.Convert(wantT)
 
 	if converted.Interface() != p.want.Interface() {
-		return violated(p, v, "the values are not equal after type conversion")
+		return violated(p, v, "𝑥 does not have the same value as %s after type conversion", p.want)
 	}
 
-	// HACK(jmalloc): Do we really want numeric-specific comparisons here?
 	if reflectx.IsNeg(got) != reflectx.IsNeg(converted) {
-		return violated(p, v, "the values have different numeric signs after type conversion")
+		return violated(p, v, "the value of 𝑥 changed after type conversion")
 	}
 
 	reverted := converted.Convert(gotT)
 	if reverted.Interface() != v {
-		return violated(p, v, "information is lost when converting back to the original type")
+		return violated(p, v, "the value of 𝑥 changed after type conversion")
 	}
 
-	return satisfied(p, v, "the values are equal after type conversion")
+	return satisfied(p, v, "𝑥 has the same value as %s after type conversion", p.want)
 }
 
-func (p equivalent) Is(q Predicate) bool {
-	if q, ok := q.(equivalent); ok {
+func (p equivalence) Is(q Predicate) bool {
+	if q, ok := q.(equivalence); ok {
 		return p.want.Interface() == q.want.Interface()
 	}
 	return false
 }
 
-func (p equivalent) Reduce() Predicate {
+func (p equivalence) Reduce() Predicate {
 	return p
 }

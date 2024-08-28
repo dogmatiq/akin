@@ -65,16 +65,15 @@ func formatTV(v reflect.Value) string {
 	rv := formatV(v)
 
 	switch t {
-	case reflect.TypeFor[string](),
-		reflect.TypeFor[bool](),
-		reflect.TypeFor[int]():
+	case reflect.TypeOf(""),
+		reflect.TypeOf(true),
+		reflect.TypeOf(0),
+		reflect.TypeOf(0.0),
+		reflect.TypeOf(0 + 0i):
 		return rv
 	}
 
 	rt := formatT(t)
-	if strings.ContainsAny(rt, " *({") {
-		rt = "(" + rt + ")"
-	}
 
 	return fmt.Sprintf("%s(%s)", rt, rv)
 }
@@ -84,20 +83,39 @@ func formatT(t reflect.Type) string {
 		return "any"
 	}
 
-	return strings.ReplaceAll(
+	s := strings.ReplaceAll(
 		t.String(),
 		" {",
 		"{",
 	)
+
+	if strings.ContainsAny(s, " *({") {
+		s = "(" + s + ")"
+	}
+
+	return s
 }
 
 func formatV(v reflect.Value) string {
-	if v.Kind() == reflect.String {
-		return fmt.Sprintf("%q", v.Interface())
-	}
-
 	if IsNil(v) {
 		return "nil"
+	}
+
+	if v.CanComplex() {
+		s := fmt.Sprint(v.Interface())
+		return s[1 : len(s)-1]
+	}
+
+	if v.CanFloat() {
+		s := fmt.Sprint(v.Interface())
+		if strings.ContainsAny(s, ".eE") {
+			return s
+		}
+		return s + ".0"
+	}
+
+	if v.Kind() == reflect.String {
+		return fmt.Sprintf("%q", v.Interface())
 	}
 
 	return fmt.Sprintf("%v", v.Interface())

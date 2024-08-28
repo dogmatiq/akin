@@ -6,34 +6,53 @@ import (
 	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
-// Model returns a [Predicate] that matches values that are "akin to" the given
-// model value.
-func Model(model any) Predicate {
-	v := reflectx.ValueOf(model)
-	return fromModel(v)
+// To returns a [Predicate] that matches values that are "akin to" the model
+// value m.
+func To(m any) Predicate {
+	v := reflectx.ValueOf(m)
+	return model(v)
 }
 
-func fromModel(v reflect.Value) Predicate {
+func model(v reflect.Value) Predicate {
 	if v.Type().PkgPath() != "" {
-		return equal{v}
+		return equality{v}
 	}
 
 	switch v.Kind() {
-	case reflect.Array:
-	case reflect.Chan:
-	case reflect.Func:
 
 	case reflect.Interface:
 		if v.Type() == reflect.TypeFor[any]() && v.IsNil() {
-			return Or(IsNil, Equal(uintptr(0)))
+			return Or(IsNil, IsEqualTo(uintptr(0)))
 		}
 
-	case reflect.Map:
-	case reflect.Pointer:
-	case reflect.Slice:
-	case reflect.String:
-	case reflect.Struct:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+		reflect.Float32, reflect.Float64,
+		reflect.Uintptr:
+		if c, ok := reflectx.ToComplex128(v); ok {
+			return or{
+				equivalence{v},
+				IsEquivalentTo(c),
+			}
+		}
+
+	case reflect.Complex64, reflect.Complex128:
+		if f, ok := reflectx.ToFloat64(v); ok {
+			return or{
+				equivalence{v},
+				IsEquivalentTo(f),
+			}
+		}
+
+		// case reflect.Array:
+		// case reflect.Chan:
+		// case reflect.Func:
+		// case reflect.Map:
+		// case reflect.Pointer:
+		// case reflect.Slice:
+		// case reflect.String:
+		// case reflect.Struct:
 	}
 
-	return equivalent{v}
+	return equivalence{v}
 }

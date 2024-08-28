@@ -20,24 +20,24 @@ func assertSatisfied(t *testing.T, p Predicate, v any) {
 
 	e := p.Eval(v)
 
+	if e.Reason == "" {
+		panic("akin: no reason provided, this is a bug")
+	}
+
 	if e.IsSatisfied {
 		t.Logf(
-			"as expected, %s satisfies %s, because %s",
+			"as expected, given 𝑥 ≔ %s, the predicate %s is satisfied, because %s",
 			reflectx.Sprint(v),
 			p,
 			e.Reason,
 		)
 	} else {
-		t.Errorf(
-			"expected %s to satisfy %s, but %s",
+		t.Fatalf(
+			"given 𝑥 ≔ %s, the predicate %s is unexpectedly violated, because %s",
 			reflectx.Sprint(v),
 			p,
 			e.Reason,
 		)
-	}
-
-	if e.Reason == "" {
-		panic("akin: no reason provided, this is a bug")
 	}
 }
 
@@ -46,24 +46,24 @@ func assertViolated(t *testing.T, p Predicate, v any) {
 
 	e := p.Eval(v)
 
+	if e.Reason == "" {
+		panic("akin: no reason provided, this is a bug")
+	}
+
 	if e.IsSatisfied {
-		t.Errorf(
-			"expected %s to violate %s, but %s",
+		t.Fatalf(
+			"given 𝑥 ≔ %s, the predicate %s is unexpectedly satisfied, because %s",
 			reflectx.Sprint(v),
 			p,
 			e.Reason,
 		)
 	} else {
 		t.Logf(
-			"as expected, %s violates %s because %s",
+			"as expected, given 𝑥 ≔ %s, the predicate %s is violated, because %s",
 			reflectx.Sprint(v),
 			p,
 			e.Reason,
 		)
-	}
-
-	if e.Reason == "" {
-		panic("akin: no reason provided, this is a bug")
 	}
 }
 
@@ -89,6 +89,21 @@ func assertIsReduced(t *testing.T, p Predicate) {
 	if !got.Is(p) {
 		t.Fatalf("did not expect reduction of %s but got %s", p, got)
 	}
+}
+
+func assertIsOrReducesTo(t *testing.T, want, p Predicate) {
+	t.Helper()
+
+	if p.Is(want) {
+		return
+	}
+
+	got := p.Reduce()
+	if got.Is(want) {
+		return
+	}
+
+	t.Fatalf("expected %s to be (or reduce to) %s, but got %s", p, want, got)
 }
 
 func assertEquivalent(t *testing.T, p, q Predicate) {
