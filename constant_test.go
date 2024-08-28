@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	. "github.com/dogmatiq/akin"
+	"github.com/dogmatiq/akin/internal/testcase"
 )
 
 func TestConstant(t *testing.T) {
@@ -13,7 +14,7 @@ func TestConstant(t *testing.T) {
 	assertIsReduced(t, Top)
 	assertIsReduced(t, Bottom)
 
-	for _, c := range all {
+	for _, c := range testcase.All {
 		assertSatisfied(t, Top, c.Value)
 		assertViolated(t, Bottom, c.Value)
 	}

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	. "github.com/dogmatiq/akin"
+	"github.com/dogmatiq/akin/internal/testcase"
 )
 
 func TestEquality(t *testing.T) {
@@ -19,10 +20,10 @@ func TestEquality(t *testing.T) {
 
 	assertIsReduced(t, p)
 
-	for i1, c1 := range comparable {
+	for i1, c1 := range testcase.Comparable {
 		p := IsEqualTo(c1.Value)
 
-		for i2, c2 := range comparable {
+		for i2, c2 := range testcase.Comparable {
 			if i1 == i2 {
 				assertSatisfied(t, p, c2.Value)
 			} else {

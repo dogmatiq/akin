@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	. "github.com/dogmatiq/akin"
+	"github.com/dogmatiq/akin/internal/testcase"
 )
 
 func TestTo_numeric(t *testing.T) {
@@ -35,7 +36,7 @@ func TestTo_numeric(t *testing.T) {
 		assertIsOrReducesTo(t, IsEqualTo(v), To(v))
 	}
 
-	for _, cases := range []testCases{zeroNumbers, positiveNumbers, negativeNumbers} {
+	for _, cases := range []testcase.Set{testcase.Zero, testcase.Pos, testcase.Neg} {
 		for _, c1 := range cases {
 			p := To(c1.Value)
 			for _, c2 := range cases {

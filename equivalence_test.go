@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	. "github.com/dogmatiq/akin"
+	"github.com/dogmatiq/akin/internal/testcase"
 )
 
 func TestEquivalence(t *testing.T) {
@@ -26,11 +27,11 @@ func TestEquivalence(t *testing.T) {
 	assertViolated(t, IsEquivalentTo(uint32(0)), math.MaxUint32+1)                 // "32-bit unsigned overflow"
 	assertViolated(t, IsEquivalentTo(uint64(0)), float64(math.MaxUint64+1))        // "64-bit unsigned overflow"
 
-	for _, c := range comparable {
+	for _, c := range testcase.Comparable {
 		assertSatisfied(t, IsEquivalentTo(c.Value), c.Value)
 	}
 
-	for _, numbers := range []testCases{zeroNumbers, positiveNumbers, negativeNumbers} {
+	for _, numbers := range []testcase.Set{testcase.Zero, testcase.Pos, testcase.Neg} {
 		_, nonComplex := numbers.Split(reflect.Value.CanComplex)
 
 		for _, c1 := range nonComplex {
