@@ -7,8 +7,10 @@ import (
 	"github.com/dogmatiq/akin/internal/assert"
 )
 
-func TestInhabitance(t *testing.T) {
-	p := InhabitsType[int]()
+func TestHasType(t *testing.T) {
+	p := HasType[int]()
+
+	assert.IsReduced(t, p)
 
 	assert.Satisfied(t, p, 0)
 	assert.Violated(t, p, uint(0))

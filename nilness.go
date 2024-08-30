@@ -1,47 +1,59 @@
 package akin
 
-import "github.com/dogmatiq/akin/internal/reflectx"
+import (
+	"fmt"
 
-const (
-	// IsNil is a [Predicate] that is satisfied by all nil values, regardless of
-	// their type.
-	IsNil nilness = true
-
-	// IsNonNil is a [Predicate] that is satisfied by all non-nil values,
-	// regardless of their type.
-	IsNonNil nilness = false
+	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
-type nilness bool
+const (
+	// IsNil is a [Predicate] that is satisfied when 𝑥 is nil, regardless of
+	// its type.
+	IsNil Nilness = true
 
-func (p nilness) String() string {
-	if p {
-		return "𝑥 = nil"
-	}
-	return "𝑥 ≠ nil"
+	// IsNonNil is a [Predicate] that is satisfied when 𝑥 is non-nil,
+	// regardless of its type.
+	IsNonNil Nilness = false
+)
+
+// Nilness is a [Predicate] and [Property] that is satisfied when 𝑥 has
+// "nilness" equal to the predicate's value.
+type Nilness bool
+
+// Format implements the [fmt.Formatter] interface.
+func (p Nilness) Format(f fmt.State, verb rune) {
+	format(p, f, verb)
 }
 
-func (p nilness) Eval(v any) Evaluation {
-	r := reflectx.ValueOf(v)
-
-	good, bad := "nil", "non-nil"
-	if !p {
-		good, bad = bad, good
-	}
-
-	// TODO: expand this language to read "x is a nil pointer", "x is a nil
-	// slice", etc. Perhaps call out empty but non-nil slices, maps, etc.
-	if reflectx.IsNil(r) == bool(p) {
-		return satisfied(p, v, "𝑥 is %s", good)
-	}
-
-	return violated(p, v, "𝑥 is %s", bad)
+func (p Nilness) hide() any {
+	type T = Nilness
+	type Nilness T
+	return Nilness(p)
 }
 
-func (p nilness) Is(q Predicate) bool {
-	return p == q
+func (p Nilness) formal() string {
+	return choose(p, "𝑥 = nil", "𝑥 ≠ nil")
 }
 
-func (p nilness) Reduce() Predicate {
-	return p
+func (p Nilness) human() string {
+	return choose(p, "𝑥 is nil", "𝑥 is not nil")
+}
+
+func (p Nilness) inverse() string {
+	return (!p).human()
+}
+
+func (p Nilness) visitPredicate(v PredicateVisitor) {
+	v.VisitNilnessPredicate(p)
+}
+
+func (e *evaluator) VisitNilnessPredicate(p Nilness) {
+	e.IsSatisfied = reflectx.IsNil(e.X) == bool(p)
+
+	prop := ValueEquivalence{"nil"}
+	if e.IsSatisfied && !bool(p) {
+		e.Reason = PropertySatisfied{prop}
+	} else {
+		e.Reason = PropertyViolated{prop}
+	}
 }

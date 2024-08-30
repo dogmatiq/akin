@@ -2,95 +2,134 @@ package akin
 
 import (
 	"fmt"
-
-	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
-// Or returns a [Predicate] that is satisfied if any of the given predicates are
-// satisfied.
-func Or(predicates ...Predicate) Predicate {
-	return or(predicates)
+// Or is a [Predicate] 𝑷 that is satisfied when 𝑥 satisfies any one of its 𝑛
+// constituent predicates 𝐐ₙ.
+//
+// If there are no constituent predicates (𝑛 = 0), then 𝑷❨𝑥❩ is false.
+type Or []Predicate
+
+func (p Or) visitPredicate(v PredicateVisitor) { v.VisitOrPredicate(p) }
+
+// Format implements the [fmt.Formatter] interface.
+func (p Or) Format(f fmt.State, v rune) {
+	format(p, f, v)
 }
 
-type or []Predicate
+func (p Or) hide() any {
+	type T = Or
+	type Or T
+	return T(p)
+}
 
-func (p or) String() string {
+func (p Or) formal() string {
 	switch len(p) {
 	case 0:
-		return "❨⁇ ∨ ⁇❩"
+		return "❨𝐐 ∨ 𝐐❩"
 	case 1:
-		return reflectx.Sprintf("❨%s ∨ ⁇❩", p[0])
+		return sprintf("❨%s ∨ 𝐐❩", p[0])
 	default:
-		return "❨" + reflectx.SprintList(" ∨ ", p...) + "❩"
+		return "❨" + join(" ∨ ", p...) + "❩"
 	}
 }
 
-func (p or) Eval(v any) Evaluation {
-	var pe Evaluation
-
-	for _, c := range p {
-		ce := c.Eval(v)
-		pe.Constituents = append(pe.Constituents, ConstituentEvaluation{ce})
-
-		if ce.IsSatisfied && !pe.IsSatisfied {
-			pe.IsSatisfied = true
-			pe.Description = fmt.Sprintf("the constituent predicate %s is satisfied, because %s", c, ce.Description)
-		}
+func (p Or) human() string {
+	switch len(p) {
+	case 0:
+		return "𝑷 has no constituent predicates"
+	case 1:
+		return sprintf("𝑥 satisfies %s", p[0])
+	default:
+		return "𝑥 satisfies " + join2(", ", " or ", p...)
 	}
-
-	if !pe.IsSatisfied {
-		if len(p) == 0 {
-			pe.Description = "there are no constituent predicates"
-		} else {
-			pe.Description = "none of the constituent predicates are satisfied"
-		}
-	}
-
-	return pe
 }
 
-func (p or) Is(q Predicate) bool {
-	if q, ok := q.(or); ok {
-		return samePredicates(p, q)
+func (e *evaluator) VisitOrPredicate(p Or) {
+	if len(p) == 0 {
+		e.SetReason(false, NoConstituents{p})
+		return
 	}
-	return false
-}
 
-func (p or) Reduce() Predicate {
-	var reduced or
+	for _, qn := range p {
+		en := eval(qn, e.X)
 
-	for _, c := range p {
-		flattened, ok := c.(or)
-		if !ok {
-			flattened = or{c}
-		}
-
-		for _, c := range flattened {
-			c = c.Reduce()
-
-			if c.Is(Top) {
-				return Top
-			}
-
-			if c.Is(Bottom) {
-				continue
-			}
-
-			if containsPredicate(reduced, c) {
-				continue
-			}
-
-			reduced = append(reduced, c)
+		if en.IsSatisfied {
+			e.SetReason(true, ConstituentSatisfied{en})
+			return
 		}
 	}
 
-	if len(reduced) == 0 {
-		return Bottom
-	}
-
-	if len(reduced) == 1 {
-		return reduced[0]
-	}
-
-	return reduced
+	e.SetReason(false, AllConstituentsViolated{p})
 }
+
+// func (p or) Eval(v any) Evaluation {
+// 	e := buildEvaluation(p, v)
+
+// 	isSatisfied := false
+
+// 	for _, c := range p {
+// 		ce := c.Eval(v)
+
+// 		if ce.IsSatisfied {
+// 			isSatisfied = true
+// 			e.For(ConstituentEvaluation{ce})
+// 		} else {
+// 			e.Against(ConstituentEvaluation{ce})
+// 		}
+// 	}
+
+// 	if len(p) == 0 {
+// 		e.Against(PredicateIsConstant{p, false})
+// 	} else {
+// 		e.Against(PredicateHasNoConstituents{p})
+// 	}
+
+// 	return e.Build(isSatisfied)
+// }
+
+// func (p or) Is(q Predicate) bool {
+// 	if q, ok := q.(or); ok {
+// 		return samePredicates(p, q)
+// 	}
+// 	return false
+// }
+
+// func (p or) Reduce() Predicate {
+// 	var reduced or
+
+// 	for _, c := range p {
+// 		flattened, ok := c.(or)
+// 		if !ok {
+// 			flattened = or{c}
+// 		}
+
+// 		for _, c := range flattened {
+// 			c = c.Reduce()
+
+// 			if c.Is(Top) {
+// 				return Top
+// 			}
+
+// 			if c.Is(Bottom) {
+// 				continue
+// 			}
+
+// 			if containsPredicate(reduced, c) {
+// 				continue
+// 			}
+
+// 			reduced = append(reduced, c)
+// 		}
+// 	}
+
+// 	if len(reduced) == 0 {
+// 		return Bottom
+// 	}
+
+// 	if len(reduced) == 1 {
+// 		return reduced[0]
+// 	}
+
+// 	return reduced
+// }

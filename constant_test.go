@@ -12,8 +12,10 @@ func TestConstant(t *testing.T) {
 	assert.IsReduced(t, Top)
 	assert.IsReduced(t, Bottom)
 
-	for _, c := range testcase.All {
-		assert.Satisfied(t, Top, c.Value)
-		assert.Violated(t, Bottom, c.Value)
+	for n, x := range testcase.All {
+		t.Run(n, func(t *testing.T) {
+			assert.Satisfied(t, Top, x)
+			assert.Violated(t, Bottom, x)
+		})
 	}
 }

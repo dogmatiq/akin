@@ -24,26 +24,26 @@ var (
 	Incomparable = incomparable
 )
 
-// Case is a single test case.
-type Case struct {
-	Name  string
-	Value any
-}
-
-// Set is a set of related [Case] values.
-type Set []Case
+// Set is a set of related test cases.
+type Set map[string]any
 
 // Split splits the set into two sub-sets based on a predicate function.
 func (s Set) Split(
 	p func(reflect.Value) bool,
 ) (in, ex Set) {
-	for _, c := range s {
-		if p(reflectx.ValueOf(c.Value)) {
-			in = append(in, c)
-		} else {
-			ex = append(ex, c)
+	for n, x := range s {
+		s := &ex
+		if p(reflectx.ValueOf(x)) {
+			s = &in
 		}
+
+		if *s == nil {
+			*s = Set{}
+		}
+
+		(*s)[n] = x
 	}
+
 	return in, ex
 }
 
@@ -52,23 +52,32 @@ func (s Set) Split(
 func (s Set) Filter(
 	p func(reflect.Value) bool,
 ) Set {
-	s, _ = s.Split(p)
-	return s
-}
+	var result Set
 
-// Union returns a set containing all of the cases in the given sets.
-func Union[S ~[]Case](cases ...S) Set {
-	seen := map[string]struct{}{}
-	var out []Case
-
-	for _, cc := range cases {
-		for _, c := range cc {
-			if _, ok := seen[c.Name]; !ok {
-				seen[c.Name] = struct{}{}
-				out = append(out, c)
+	for n, x := range s {
+		if p(reflectx.ValueOf(x)) {
+			if result == nil {
+				result = Set{}
 			}
+			result[n] = x
 		}
 	}
 
-	return out
+	return result
+}
+
+// Union returns a set containing all of the cases in the given sets.
+func Union(sets ...Set) Set {
+	var result Set
+
+	for _, s := range sets {
+		for n, x := range s {
+			if result == nil {
+				result = Set{}
+			}
+			result[n] = x
+		}
+	}
+
+	return result
 }

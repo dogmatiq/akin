@@ -12,13 +12,17 @@ func TestNilness(t *testing.T) {
 	assert.IsReduced(t, IsNil)
 	assert.IsReduced(t, IsNonNil)
 
-	for _, c := range testcase.Nil {
-		assert.Satisfied(t, IsNil, c.Value)
-		assert.Violated(t, IsNonNil, c.Value)
+	for n, x := range testcase.Nil {
+		t.Run(n, func(t *testing.T) {
+			assert.Satisfied(t, IsNil, x)
+			assert.Violated(t, IsNonNil, x)
+		})
 	}
 
-	for _, c := range testcase.NonNil {
-		assert.Satisfied(t, IsNonNil, c.Value)
-		assert.Violated(t, IsNil, c.Value)
+	for n, x := range testcase.NonNil {
+		t.Run(n, func(t *testing.T) {
+			assert.Violated(t, IsNil, x)
+			assert.Satisfied(t, IsNonNil, x)
+		})
 	}
 }
