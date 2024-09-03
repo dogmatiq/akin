@@ -1,0 +1,25 @@
+package akin
+
+// An Attribute describes some indivisible quality of a value.
+//
+// Unlike a [Predicate], an [Attribute] cannot be evaluated against a Go value
+// directly. This is because attributes can represent abstract qualities. For
+// example, the [ValueEquivalence] attribute can be used to represent "the
+// number one", without any specific Go type, such as int or float64.
+//
+// Not all attributes are abstract, and infact, some are also predicates. For
+// example, [TypeEquivalence] implments both [Attribute] and [Predicate].
+//
+// Within documentation and strings, 𝛂 (mathematical bold italic small alpha)
+// is used to represent an attribute. When discussing multiple attributes, the
+// letters 𝛃, 𝜸, and so on, are used.
+type Attribute interface {
+	// VisitA calls the method on v associated with the attribute's type.
+	VisitA(AVisitor)
+}
+
+// AVisitor is an algorithm with logic specific to each [Attribute] type.
+type AVisitor interface {
+	// TypeEquivalence(TypeEquivalence)
+	// ValueEquivalence(ValueEquivalence)
+}

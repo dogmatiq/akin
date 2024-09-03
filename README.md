@@ -10,3 +10,15 @@ A fuzzy comparison algorithm for Go values.
 [![Code Coverage](https://img.shields.io/codecov/c/github/dogmatiq/akin/main.svg?style=for-the-badge)](https://codecov.io/github/dogmatiq/akin)
 
 </div>
+
+## Notation and terminology
+
+- `𝑷` denotes some `predicate`
+- `𝒙` is a `value` against which `𝑷` can be `evaluated`
+- `𝐐` or `𝐐ₙ` is a `constituent` predicate of `𝑷`
+- The `≔` symbol defines some truth as a `given`, for example `𝒙 ≔ 7`
+- `=` and `≠` show that a value is (or is not) equal to another value,
+  respectively.
+
+- `≍` and `≭` show that a `value` is (or is not) equivalent to some abstract
+  value, which is not necessarily representable as a Go value.

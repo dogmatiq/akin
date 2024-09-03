@@ -4,13 +4,11 @@ import (
 	"fmt"
 )
 
-// Or is a [Predicate] 𝑷 that is satisfied when 𝑥 satisfies any one of its 𝑛
+// Or is a [Predicate] 𝑷 that is satisfied when 𝒙 satisfies any one of its 𝑛
 // constituent predicates 𝐐ₙ.
 //
-// If there are no constituent predicates (𝑛 = 0), then 𝑷❨𝑥❩ is false.
+// If there are no constituent predicates (𝑛 = 0), then 𝑷❨𝒙❩ is false.
 type Or []Predicate
-
-func (p Or) visitPredicate(v PredicateVisitor) { v.VisitOrPredicate(p) }
 
 // Format implements the [fmt.Formatter] interface.
 func (p Or) Format(f fmt.State, v rune) {
@@ -26,11 +24,11 @@ func (p Or) hide() any {
 func (p Or) formal() string {
 	switch len(p) {
 	case 0:
-		return "❨𝐐 ∨ 𝐐❩"
+		return parensf("𝐐 ∨ 𝐐")
 	case 1:
-		return sprintf("❨%s ∨ 𝐐❩", p[0])
+		return parensf("%s ∨ 𝐐", p[0])
 	default:
-		return "❨" + join(" ∨ ", p...) + "❩"
+		return parens(join(" ∨ ", p...))
 	}
 }
 
@@ -39,10 +37,23 @@ func (p Or) human() string {
 	case 0:
 		return "𝑷 has no constituent predicates"
 	case 1:
-		return sprintf("𝑥 satisfies %s", p[0])
+		return renderf("𝒙 satisfies %s", p[0])
 	default:
-		return "𝑥 satisfies " + join2(", ", " or ", p...)
+		return "𝒙 satisfies " + join2(", ", " or ", p...)
 	}
+}
+
+func (p Or) visitPredicate(v PredicateVisitor) {
+	v.VisitOrPredicate(p)
+}
+
+func (i *inverter) VisitOrPredicate(p Or) {
+	i.Q = Not(p)
+}
+
+func (r *reducer) VisitOrPredicate(p Or) {
+	// TODO
+	r.Q = p
 }
 
 func (e *evaluator) VisitOrPredicate(p Or) {
@@ -51,11 +62,11 @@ func (e *evaluator) VisitOrPredicate(p Or) {
 		return
 	}
 
-	for _, qn := range p {
-		en := eval(qn, e.X)
+	for _, q := range p {
+		eq := eval(q, e.X)
 
-		if en.IsSatisfied {
-			e.SetReason(true, ConstituentSatisfied{en})
+		if eq.IsSatisfied {
+			e.SetReason(true, ConstituentSatisfied{eq})
 			return
 		}
 	}

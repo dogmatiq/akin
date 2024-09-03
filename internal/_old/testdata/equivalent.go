@@ -7,7 +7,7 @@ import (
 	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
-// IsEquivalentTo returns a [Predicate] that is satisfied when 𝑥 == v, after
+// IsEquivalentTo returns a [Predicate] that is satisfied when 𝒙 == v, after
 // conversion to the same type.
 func IsEquivalentTo(v any) Equivalence {
 	r := reflectx.ValueOf(v)
@@ -15,13 +15,13 @@ func IsEquivalentTo(v any) Equivalence {
 	// TODO: make the predicate always fail if v is not comparable, rather than
 	// panicking.
 	if !r.Comparable() {
-		panic(sprintf("%s is not comparable", r.Type()))
+		panic(renderf("%s is not comparable", r.Type()))
 	}
 
 	return Equivalence{r}
 }
 
-// Equivalence is a [Predicate] that is satisfied when 𝑥 compares as equal to a
+// Equivalence is a [Predicate] that is satisfied when 𝒙 compares as equal to a
 // fixed value when using the == operator, after conversion to the same type.
 type Equivalence struct {
 	V reflect.Value
@@ -37,16 +37,24 @@ func (p Equivalence) hide() any {
 	type Equivalent T
 	return Equivalent(p)
 }
-func (p Equivalence) formal() string {
-	return sprintf("𝑥 ≅ %s", p.V)
+func (p Equivalence) formal(neg bool) string {
+	return "𝒙" + choose(neg, " ≆ ", " ≅ ") + render(p.V)
 }
 
-func (p Equivalence) human() string {
-	return sprintf("𝑥 is equal to %s when converted to %s", p.V, p.V.Type())
+func (p Equivalence) human(neg bool) string {
+	return "𝒙 is" + insert(neg, "not") + " equivalent to " + render(p.V) + " when converted to " + render(p.V.Type())
 }
 
 func (p Equivalence) visitPredicate(v PredicateVisitor) {
 	v.VisitEquivalentPredicate(p)
+}
+
+func (i *inverter) VisitEquivalentPredicate(p Equivalence) {
+	i.Q = Not(p)
+}
+
+func (r *reducer) VisitEquivalentPredicate(p Equivalence) {
+	r.Q = p
 }
 
 func (e *evaluator) VisitEquivalentPredicate(p Equivalence) {

@@ -8,14 +8,14 @@ import (
 	"github.com/dogmatiq/akin/internal/testcase"
 )
 
-func TestConstant(t *testing.T) {
-	assert.IsReduced(t, Top)
-	assert.IsReduced(t, Bottom)
+func TestNot(t *testing.T) {
+	assert.ReducesTo(t, Not(Top), Bottom)
+	assert.ReducesTo(t, Not(Bottom), Top)
 
 	for n, x := range testcase.All {
 		t.Run(n, func(t *testing.T) {
-			assert.Satisfied(t, Top, x)
-			assert.Violated(t, Bottom, x)
+			assert.Violated(t, Not(Bottom), x)
+			assert.Satisfied(t, Not(Top), x)
 		})
 	}
 }

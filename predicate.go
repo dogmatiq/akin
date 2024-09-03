@@ -1,69 +1,25 @@
 package akin
 
-import (
-	"fmt"
-
-	"github.com/dogmatiq/akin/internal/reflectx"
-)
-
-// A Predicate 𝑷 describes a condition or set of conditions that a value 𝑥
-// either satisfies or violates.
+// A Predicate describes some criteria that a Go value may (or may not) satisfy.
 //
-// Many [Predicate] types also implement [Property].
+// Within documentation and strings, 𝑷 (mathematical bold italic capital P) is
+// used to represent a predicate. 𝒙 (mathematical bold italic small X)
+// represents a value that is tested against the criteria described by 𝑷. When
+// discussing multiple predicates, the letters 𝐐, 𝑹, and so on, are used.
 //
-// All predicates can be formatted with the [fmt] package. The "%s" verb
-// produces a (somewhat) formal representation of the predicate, whereas "%+s"
-// produces a more verbose human-readable description.
+// To determine if 𝒙 satisfies 𝑷, we "evaluate 𝑷 of 𝒙", written 𝑷❨𝒙❩. The
+// result of an evaluation is one of [True], [False] or [Indeterminate], denoted
+// 𝓽, 𝓯 and 𝓾, respectively (mathematical bold script small letters).
+//
+// The [Eval] function is used to evaluate 𝑷❨𝒙❩.
 type Predicate interface {
-	formatter
-
-	visitPredicate(PredicateVisitor)
+	// VisitP calls the method on v associated with the predicate's type.
+	VisitP(v PVisitor)
 }
 
-// Eval evaluates a value against a predicate, that is 𝑷❨𝑥❩.
-func Eval(p Predicate, x any) Evaluation {
-	return eval(p, reflectx.ValueOf(x))
-}
-
-// Reduce returns the simplest form of p.
-func Reduce(p Predicate) Predicate {
-	return reduce(p)
-}
-
-// Same returns true if a and b are the "same" predicate.
-//
-// Two predicates are the same if they are the same type and have equivalent
-// parameters. This is a kind of weak equality that respects the commutative
-// properties of some predicate types.
-func Same(a, b Predicate) bool {
-	return same(a, b)
-}
-
-type isPredicate[T interface {
-	fmt.Formatter
-	Predicate
-}] struct{}
-
-var (
-	_ = isPredicate[Constant]{}
-	_ = isPredicate[Equal]{}
-	_ = isPredicate[Equivalence]{}
-	_ = isPredicate[Nilness]{}
-	_ = isPredicate[Or]{}
-	_ = isPredicate[TypeEquivalence]{}
-)
-
-// A PredicateVisitor encapsulates logic specific to each [Predicate] type.
-type PredicateVisitor interface {
-	VisitConstantPredicate(Constant)
-	VisitEqualPredicate(Equal)
-	VisitEquivalentPredicate(Equivalence)
-	VisitNilnessPredicate(Nilness)
-	VisitOrPredicate(Or)
-	VisitTypeEquivalencePredicate(TypeEquivalence)
-}
-
-// VisitPredicate calls the appropriate method on v for the given predicate.
-func VisitPredicate(p Predicate, v PredicateVisitor) {
-	p.visitPredicate(v)
+// PVisitor is an algorithm with logic specific to each [Predicate] type.
+type PVisitor interface {
+	Const(Const)
+	// Nilness(Nilness)
+	// TypeEquivalence(TypeEquivalence)
 }
