@@ -1,7 +1,5 @@
 package akin
 
-import "github.com/dogmatiq/akin/internal/fmtx"
-
 // A Rationale describes the logical reasoning that justifies an [Evaluation].
 //
 // Within documentation and strings, ∵ (the because symbol) is used to represent
@@ -31,7 +29,7 @@ type (
 	// predicates 𝐐₁, 𝐐₂, … 𝐐ₙ. That is, 𝑛 = 0.
 	//
 	// Such a [Predicate] does not actually describe any criteria, therefore
-	// 𝑷❨𝒙❩ is 𝓾 ([Indeterminate]) for all 𝒙.
+	// 𝑷❨𝒙❩ is 𝓾 ([Undefined]) for all 𝒙.
 	PIsVacuous struct{ P Predicate }
 
 	// PofX is a [Rationale] based on the evaluation result of 𝑷❨𝒙❩. It is the
@@ -104,9 +102,9 @@ func (r QofX) String() string    { return stringR(r) }
 func (s *stringer) QofX(r QofX) {
 	s.fmt(
 		"𝐐%s ≔ %s ∴ 𝐐%s❨𝒙) = %s ∵ %s",
-		fmtx.Subscript(r.N),
+		subscript(r.N),
 		r.Q,
-		fmtx.Subscript(r.N),
+		subscript(r.N),
 		r.QX,
 		r.R,
 	)

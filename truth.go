@@ -2,13 +2,13 @@ package akin
 
 // Truth represents a three-valued logic type.
 //
-// A [Truth] has three possible values; [True], [False] and [Indeterminate],
+// A [Truth] has three possible values; [True], [False] and [Undefined],
 // denoted 𝓽, 𝓯 and 𝓾, respectively (mathematical bold script small letters).
 type Truth struct{ truth int }
 
 var (
-	// Indeterminate (or 𝓾) is a [Truth] that is neither [True] nor [False].
-	Indeterminate = Truth{}
+	// Undefined (or 𝓾) is a [Truth] that is neither [True] nor [False].
+	Undefined = Truth{}
 
 	// True (or 𝓽) is the [Truth] that is equivalent to the boolean true.
 	True = Truth{1}
