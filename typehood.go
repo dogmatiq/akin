@@ -2,10 +2,10 @@ package akin
 
 import "reflect"
 
-// Is returns a [Predicate] that is satisfied when 𝒙 is an implementation of T.
+// IsA returns a [Predicate] that is satisfied when 𝒙 is an implementation of T.
 //
 // If T is not an interface, the predicate matches only if 𝒙 is exactly T.
-func Is[T any]() Typehood {
+func IsA[T any]() Typehood {
 	return Typehood{
 		T: typeFor[T](),
 	}
@@ -32,5 +32,8 @@ func (e *evaluator) Typehood(p Typehood) {
 		e.Px = truth(t.rtype == p.T.rtype)
 	}
 
-	e.R = Ax{A: TypeEq{t}, Ax: true}
+	e.R = Ax{
+		A:  TypeEq{t},
+		Ax: true,
+	}
 }

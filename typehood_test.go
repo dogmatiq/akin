@@ -10,7 +10,7 @@ import (
 
 func TestTypehood(t *testing.T) {
 	t.Run("concrete type", func(t *testing.T) {
-		p := Is[int]()
+		p := IsA[int]()
 
 		AssertIsReduced(t, p)
 
@@ -21,7 +21,7 @@ func TestTypehood(t *testing.T) {
 	})
 
 	t.Run("interface type", func(t *testing.T) {
-		p := Is[error]()
+		p := IsA[error]()
 
 		AssertIsReduced(t, p)
 
