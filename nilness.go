@@ -22,15 +22,11 @@ func (p Nilness) VisitP(v PVisitor) {
 }
 
 func (p Nilness) String() string {
-	return stringP(p)
+	return stringP(p, canonical)
 }
 
-func (s *identity) Nilness(p Nilness) {
-	if p {
-		*s = "𝒙 ≍ nil"
-	} else {
-		*s = "𝒙 ≭ nil"
-	}
+func (s *stringer) Nilness(p Nilness) {
+	writeNegatable(s, p, "𝒙 {≍|≭} nil")
 }
 
 func (e *evaluator) Nilness(p Nilness) {

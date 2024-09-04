@@ -74,22 +74,23 @@ type (
 // VisitR calls the method on v associated with the rationale's type.
 func (r PConst) VisitR(v RVisitor) { v.PConst(r) }
 func (r PConst) String() string    { return stringR(r) }
-func (s *identity) PConst(PConst)  { s.fmt("𝑷 is constant") }
+func (s *stringer) PConst(PConst)  { write(s, "𝑷 is constant") }
 
 // VisitR calls the method on v associated with the rationale's type.
 func (r PVacuous) VisitR(v RVisitor)  { v.PVacuous(r) }
 func (r PVacuous) String() string     { return stringR(r) }
-func (s *identity) PVacuous(PVacuous) { s.fmt("𝑷 is vacuous") }
+func (s *stringer) PVacuous(PVacuous) { write(s, "𝑷 is vacuous") }
 
 // VisitR calls the method on v associated with the rationale's type.
 func (r Px) VisitR(v RVisitor) { v.Px(r) }
 func (r Px) String() string    { return stringR(r) }
 
-func (s *identity) Px(r Px) {
-	s.fmt(
+func (s *stringer) Px(r Px) {
+	write(
+		s,
 		"𝒙 ≔ %s, 𝑷 ≔ %s ∴ 𝑷❨𝒙❩ = %s ∵ %s",
 		r.X,
-		parens(stringP(r.P)),
+		parens(stringP(r.P, canonical)),
 		r.Px,
 		r.R,
 	)
@@ -99,8 +100,9 @@ func (s *identity) Px(r Px) {
 func (r Qx) VisitR(v RVisitor) { v.Qx(r) }
 func (r Qx) String() string    { return stringR(r) }
 
-func (s *identity) Qx(r Qx) {
-	s.fmt(
+func (s *stringer) Qx(r Qx) {
+	write(
+		s,
 		"𝐐%s ≔ %s ∴ 𝐐%s❨𝒙) = %s ∵ %s",
 		subscript(r.N),
 		r.Q,
@@ -114,10 +116,12 @@ func (s *identity) Qx(r Qx) {
 func (r Ax) VisitR(v RVisitor) { v.Ax(r) }
 func (r Ax) String() string    { return stringR(r) }
 
-func (s *identity) Ax(r Ax) {
+func (s *stringer) Ax(r Ax) {
 	if r.Ax {
 		r.A.VisitA(s)
 	} else {
-		r.A.VisitA((*inverted)(s))
+		s.Form = !s.Form
+		r.A.VisitA(s)
+		s.Form = !s.Form
 	}
 }

@@ -66,30 +66,3 @@ func (v Value) valueString() string {
 
 	return fmt.Sprintf("%v", v.rvalue.Interface())
 }
-
-// ValueEq is an [Attribute] that holds when 𝒙 is equal to some specific,
-// but abstract value.
-//
-// Abstract in this context means that the value is conceptual, such as the
-// number one, versus a specific Go value, such as float64(1.0).
-type ValueEq struct {
-	// Repr is a human-readable representation of the value.
-	Repr string
-}
-
-// VisitA calls the method on v associated with the attribute's type.
-func (a ValueEq) VisitA(v AVisitor) {
-	v.ValueEq(a)
-}
-
-func (a ValueEq) String() string {
-	return stringA(a)
-}
-
-func (s *identity) ValueEq(a ValueEq) {
-	s.fmt("𝒙 ≍ %s", a.Repr)
-}
-
-func (s *inverted) ValueEq(a ValueEq) {
-	s.fmt("𝒙 ≭ %s", a.Repr)
-}

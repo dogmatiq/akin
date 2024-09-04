@@ -23,15 +23,11 @@ func (p Const) VisitP(v PVisitor) {
 }
 
 func (p Const) String() string {
-	return stringP(p)
+	return stringP(p, canonical)
 }
 
-func (s *identity) Const(p Const) {
-	if p {
-		*s = "⊤"
-	} else {
-		*s = "⊥"
-	}
+func (s *stringer) Const(p Const) {
+	writeNegatable(s, p, "{⊤|⊥}")
 }
 
 func (e *evaluator) Const(p Const) {
