@@ -2,8 +2,6 @@ package testcase
 
 import (
 	"reflect"
-
-	"github.com/dogmatiq/akin/internal/reflectx"
 )
 
 var (
@@ -33,7 +31,7 @@ func (s Set) Split(
 ) (in, ex Set) {
 	for n, x := range s {
 		s := &ex
-		if p(reflectx.ValueOf(x)) {
+		if p(reflect.ValueOf(x)) {
 			s = &in
 		}
 
@@ -55,7 +53,7 @@ func (s Set) Filter(
 	var result Set
 
 	for n, x := range s {
-		if p(reflectx.ValueOf(x)) {
+		if p(reflect.ValueOf(x)) {
 			if result == nil {
 				result = Set{}
 			}
