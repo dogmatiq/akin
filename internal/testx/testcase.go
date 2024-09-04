@@ -23,23 +23,24 @@ var (
 )
 
 // Cases is a set of related test cases.
-type Cases map[string]any
+type Cases []Case
+
+// Case is a single test case.
+type Case struct {
+	Name string
+	X    any
+}
 
 // Split splits the set into two sub-sets based on a predicate function.
-func (s Cases) Split(
+func (cc Cases) Split(
 	p func(reflect.Value) bool,
 ) (in, ex Cases) {
-	for n, x := range s {
-		s := &ex
-		if p(reflect.ValueOf(x)) {
-			s = &in
+	for _, c := range cc {
+		if p(reflect.ValueOf(c)) {
+			in = append(in, c)
+		} else {
+			ex = append(ex, c)
 		}
-
-		if *s == nil {
-			*s = Cases{}
-		}
-
-		(*s)[n] = x
 	}
 
 	return in, ex
@@ -47,33 +48,31 @@ func (s Cases) Split(
 
 // Filter returns a new set containing only the test cases that match the
 // predicate function.
-func (s Cases) Filter(
+func (cc Cases) Filter(
 	p func(reflect.Value) bool,
 ) Cases {
 	var result Cases
 
-	for n, x := range s {
-		if p(reflect.ValueOf(x)) {
-			if result == nil {
-				result = Cases{}
-			}
-			result[n] = x
+	for _, c := range cc {
+		if p(reflect.ValueOf(c)) {
+			result = append(result, c)
 		}
 	}
 
 	return result
 }
 
-// Union returns a set containing all of the cases in the given sets.
-func Union(sets ...Cases) Cases {
+// Union returns all cases in the given sets of cases.
+func Union(cases ...Cases) Cases {
 	var result Cases
+	seen := map[string]struct{}{}
 
-	for _, s := range sets {
-		for n, x := range s {
-			if result == nil {
-				result = Cases{}
+	for _, cc := range cases {
+		for _, c := range cc {
+			if _, ok := seen[c.Name]; !ok {
+				result = append(result, c)
+				seen[c.Name] = struct{}{}
 			}
-			result[n] = x
 		}
 	}
 

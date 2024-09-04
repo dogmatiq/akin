@@ -11,10 +11,10 @@ func TestConst(t *testing.T) {
 	AssertIsReduced(t, Top)
 	AssertIsReduced(t, Bottom)
 
-	for n, x := range AllCases {
-		t.Run(n, func(t *testing.T) {
-			AssertTrue(t, Top, x)
-			AssertFalse(t, Bottom, x)
+	for _, c := range AllCases {
+		t.Run(c.Name, func(t *testing.T) {
+			AssertTrue(t, Top, c.X)
+			AssertFalse(t, Bottom, c.X)
 		})
 	}
 }

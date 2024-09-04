@@ -11,17 +11,17 @@ func TestNilness(t *testing.T) {
 	AssertIsReduced(t, IsNil)
 	AssertIsReduced(t, IsNonNil)
 
-	for n, x := range NilCases {
-		t.Run(n, func(t *testing.T) {
-			AssertTrue(t, IsNil, x)
-			AssertFalse(t, IsNonNil, x)
+	for _, c := range NilCases {
+		t.Run(c.Name, func(t *testing.T) {
+			AssertTrue(t, IsNil, c.X)
+			AssertFalse(t, IsNonNil, c.X)
 		})
 	}
 
-	for n, x := range NonNilCases {
-		t.Run(n, func(t *testing.T) {
-			AssertFalse(t, IsNil, x)
-			AssertTrue(t, IsNonNil, x)
+	for _, c := range NonNilCases {
+		t.Run(c.Name, func(t *testing.T) {
+			AssertFalse(t, IsNil, c.X)
+			AssertTrue(t, IsNonNil, c.X)
 		})
 	}
 }
