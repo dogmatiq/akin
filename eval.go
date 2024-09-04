@@ -7,7 +7,7 @@ func Eval(p Predicate, x any) (Truth, Rationale) {
 		X: valueOf(x),
 	}
 
-	p.VisitP(e)
+	p.visitP(e)
 
 	return e.Px, Px(*e)
 }

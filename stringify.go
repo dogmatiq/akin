@@ -5,54 +5,79 @@ import (
 	"strings"
 )
 
-// form represents the "form" of some value that is rendered. That is, whether
-// or not it is inverted.
-type form bool
-
-const (
-	canonical form = true
-	negated   form = false
-)
-
 func stringP(p Predicate, f form) string {
-	s := stringer{Form: f}
-	p.VisitP(&s)
-	return s.Output
+	var w strings.Builder
+	p.visitP(&stringer{f, &w})
+	return w.String()
 }
 
 func stringA(a Attribute, f form) string {
-	s := stringer{Form: f}
-	a.VisitA(&s)
-	return s.Output
+	var w strings.Builder
+	a.visitA(&stringer{f, &w})
+	return w.String()
 }
 
 func stringR(r Rationale) string {
-	s := stringer{Form: canonical}
-	r.VisitR(&s)
-	return s.Output
+	var w strings.Builder
+	r.visitR(&stringer{affirmative, &w})
+	return w.String()
 }
 
-type stringer struct {
-	Form   form
-	Output string
+type (
+	// form represents the way avalue that is rendered. It is rendered either in
+	// the [affirmative] or [negative] form.
+	form bool
+
+	renderer interface {
+		form() form
+		buf() *strings.Builder
+	}
+
+	stringer struct {
+		f form
+		b *strings.Builder
+	}
+)
+
+const (
+	// affirmative form is the normal form of a [Predicate] or [Attribute].
+	// For example, 𝒙 ≡ 𝒆 is the affirmative form of the [Identity] predicate.
+	affirmative form = true
+
+	// negative form is the negative form of a [Predicate] or [Attribute]. For
+	// example, 𝒙 ≢ 𝒆 is the negative form of the [Identity] predicate.
+	negative form = false
+)
+
+func (s *stringer) form() form {
+	return s.f
 }
 
-// write appends a formatted string to the stringer's output.
+func (s *stringer) buf() *strings.Builder {
+	return s.b
+}
+
+// render appends a formatted string to the stringer's output.
 //
 // Portions of the format string contained in braces are replaced according
 // [stringer.Form]. For example, if the format string is "𝒙 {≡|≢} 𝒆", the
 // output will be "𝒙 ≡ 𝒆" when the form is [canonical], or "𝒙 ≢ 𝒆" when the
 // form is [negated].
-func write(s *stringer, format string, args ...any) {
-	writeNegatable(s, canonical, format, args...)
+func render(s renderer, format string, args ...any) {
+	renderNegatable(s, affirmative, format, args...)
 }
 
-// writeNegatable is a specialization of [write] that inverts the rendering
+// renderNegatable is a specialization of [render] that inverts the rendering
 // behavior if isCanonical is false.
-func writeNegatable[T ~bool](s *stringer, isCanonical T, format string, args ...any) {
+func renderNegatable[B ~bool](
+	r renderer,
+	isCanonical B,
+	format string,
+	args ...any,
+) {
 	var w strings.Builder
 
-	f := s.Form
+	f := r.form()
 	if !isCanonical {
 		f = !f
 	}
@@ -75,7 +100,7 @@ func writeNegatable[T ~bool](s *stringer, isCanonical T, format string, args ...
 
 		pipe := strings.IndexRune(segment, '|')
 
-		if f == negated {
+		if f == negative {
 			w.WriteString(segment[pipe+1:])
 		} else if pipe != -1 {
 			w.WriteString(segment[:pipe])
@@ -83,7 +108,7 @@ func writeNegatable[T ~bool](s *stringer, isCanonical T, format string, args ...
 	}
 
 	w.WriteString(format)
-	s.Output += fmt.Sprintf(w.String(), args...)
+	fmt.Fprintf(r.buf(), w.String(), args...)
 }
 
 // subscript renders n as a string using unicode subscript characters.

@@ -13,8 +13,7 @@ package akin
 //
 // The [Eval] function is used to evaluate 𝑷❨𝒙❩.
 type Predicate interface {
-	// VisitP calls the method on v associated with the predicate's type.
-	VisitP(v PVisitor)
+	visitP(v PVisitor)
 }
 
 // PVisitor is an algorithm with logic specific to each [Predicate] type.

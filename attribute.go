@@ -14,8 +14,7 @@ package akin
 // is used to represent an attribute. When discussing multiple attributes, the
 // letters 𝛃, 𝜸, and so on, are used.
 type Attribute interface {
-	// VisitA calls the method on v associated with the attribute's type.
-	VisitA(AVisitor)
+	visitA(AVisitor)
 }
 
 // AVisitor is an algorithm with logic specific to each [Attribute] type.

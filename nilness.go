@@ -16,18 +16,9 @@ const (
 	IsNonNil Nilness = false
 )
 
-// VisitP calls the method on v associated with the predicate's type.
-func (p Nilness) VisitP(v PVisitor) {
-	v.Nilness(p)
-}
-
-func (p Nilness) String() string {
-	return stringP(p, canonical)
-}
-
-func (s *stringer) Nilness(p Nilness) {
-	writeNegatable(s, p, "𝒙 {≍|≭} nil")
-}
+func (p Nilness) visitP(v PVisitor)   { v.Nilness(p) }
+func (p Nilness) String() string      { return stringP(p, affirmative) }
+func (s *stringer) Nilness(p Nilness) { renderNegatable(s, p, "𝒙 {≍|≭} nil") }
 
 func (e *evaluator) Nilness(p Nilness) {
 	wantNil := bool(p)

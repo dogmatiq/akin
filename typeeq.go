@@ -1,5 +1,10 @@
 package akin
 
+// Is returns a [Predicate] that holds true when 𝒙 has a specific [Type].
+func Is[T any]() TypeEq {
+	return TypeEq{T: typeFor[T]()}
+}
+
 // TypeEq is a [Predicate] and [Attribute] that holds true when 𝒙 has a
 // specific [Type].
 //
@@ -10,27 +15,19 @@ type TypeEq struct {
 	T Type
 }
 
-// VisitP calls the method on v associated with the predicate's type.
-func (pa TypeEq) VisitP(v PVisitor) {
-	v.TypeEq(pa)
-}
-
-// VisitA calls the method on v associated with the attribute's type.
-func (pa TypeEq) VisitA(v AVisitor) {
-	v.TypeEq(pa)
-}
-
-func (pa TypeEq) String() string {
-	return stringP(pa, canonical)
-}
-
-func (s *stringer) TypeEq(pa TypeEq) {
-	write(s, "𝒙 {∈|∉} %s", pa.T)
-}
+func (pa TypeEq) visitP(v PVisitor)  { v.TypeEq(pa) }
+func (pa TypeEq) visitA(v AVisitor)  { v.TypeEq(pa) }
+func (pa TypeEq) String() string     { return stringP(pa, affirmative) }
+func (s *stringer) TypeEq(pa TypeEq) { render(s, "𝒙 {∈|∉} %s", pa.T) }
 
 func (e *evaluator) TypeEq(pa TypeEq) {
-	sameType := e.X.Type() == pa.T
+	t := e.X.Type()
 
-	e.Px = truth(sameType)
-	e.R = Ax{A: pa, Ax: sameType}
+	if t == pa.T {
+		e.Px = True
+		e.R = Ax{A: pa, Ax: true}
+	} else {
+		e.Px = False
+		e.R = Ax{A: TypeEq{t}, Ax: true}
+	}
 }

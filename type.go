@@ -8,6 +8,10 @@ import (
 // Type is the type of a Go [Value].
 type Type struct{ rtype reflect.Type }
 
+func typeFor[T any]() Type {
+	return Type{reflect.TypeFor[T]()}
+}
+
 // isNilable returns true if a value of type t can be nil.
 func (t Type) isNilable() bool {
 	switch t.rtype.Kind() {

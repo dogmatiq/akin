@@ -14,15 +14,6 @@ type ValueEq struct {
 	Repr string
 }
 
-// VisitA calls the method on v associated with the attribute's type.
-func (a ValueEq) VisitA(v AVisitor) {
-	v.ValueEq(a)
-}
-
-func (a ValueEq) String() string {
-	return stringA(a, canonical)
-}
-
-func (s *stringer) ValueEq(a ValueEq) {
-	write(s, "𝒙 {≍|≭} %s", a.Repr)
-}
+func (a ValueEq) visitA(v AVisitor)   { v.ValueEq(a) }
+func (a ValueEq) String() string      { return stringA(a, affirmative) }
+func (s *stringer) ValueEq(a ValueEq) { render(s, "𝒙 {≍|≭} %s", a.Repr) }

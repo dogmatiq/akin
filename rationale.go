@@ -7,8 +7,7 @@ package akin
 // not be confused with 𝑹 (mathematical bold italic capital R) which represents
 // a [Predicate] in some circumstances.
 type Rationale interface {
-	// VisitR calls the method on v associated with the rationale's type.
-	VisitR(v RVisitor)
+	visitR(v RVisitor)
 }
 
 // RVisitor is an algorithm with logic specific to each [Rationale] type.
@@ -71,37 +70,31 @@ type (
 	}
 )
 
-// VisitR calls the method on v associated with the rationale's type.
-func (r PConst) VisitR(v RVisitor) { v.PConst(r) }
+func (r PConst) visitR(v RVisitor) { v.PConst(r) }
 func (r PConst) String() string    { return stringR(r) }
-func (s *stringer) PConst(PConst)  { write(s, "𝑷 is constant") }
+func (s *stringer) PConst(PConst)  { render(s, "𝑷 is constant") }
 
-// VisitR calls the method on v associated with the rationale's type.
-func (r PVacuous) VisitR(v RVisitor)  { v.PVacuous(r) }
+func (r PVacuous) visitR(v RVisitor)  { v.PVacuous(r) }
 func (r PVacuous) String() string     { return stringR(r) }
-func (s *stringer) PVacuous(PVacuous) { write(s, "𝑷 is vacuous") }
+func (s *stringer) PVacuous(PVacuous) { render(s, "𝑷 is vacuous") }
 
-// VisitR calls the method on v associated with the rationale's type.
-func (r Px) VisitR(v RVisitor) { v.Px(r) }
+func (r Px) visitR(v RVisitor) { v.Px(r) }
 func (r Px) String() string    { return stringR(r) }
-
 func (s *stringer) Px(r Px) {
-	write(
+	render(
 		s,
 		"𝒙 ≔ %s, 𝑷 ≔ %s ∴ 𝑷❨𝒙❩ = %s ∵ %s",
 		r.X,
-		parens(stringP(r.P, canonical)),
+		parens(stringP(r.P, affirmative)),
 		r.Px,
 		r.R,
 	)
 }
 
-// VisitR calls the method on v associated with the rationale's type.
-func (r Qx) VisitR(v RVisitor) { v.Qx(r) }
+func (r Qx) visitR(v RVisitor) { v.Qx(r) }
 func (r Qx) String() string    { return stringR(r) }
-
 func (s *stringer) Qx(r Qx) {
-	write(
+	render(
 		s,
 		"𝐐%s ≔ %s ∴ 𝐐%s❨𝒙) = %s ∵ %s",
 		subscript(r.N),
@@ -112,16 +105,16 @@ func (s *stringer) Qx(r Qx) {
 	)
 }
 
-// VisitR calls the method on v associated with the rationale's type.
-func (r Ax) VisitR(v RVisitor) { v.Ax(r) }
+func (r Ax) visitR(v RVisitor) { v.Ax(r) }
 func (r Ax) String() string    { return stringR(r) }
-
 func (s *stringer) Ax(r Ax) {
-	if r.Ax {
-		r.A.VisitA(s)
-	} else {
-		s.Form = !s.Form
-		r.A.VisitA(s)
-		s.Form = !s.Form
+	if !r.Ax {
+		s.f = !s.f
+	}
+
+	r.A.visitA(s)
+
+	if !r.Ax {
+		s.f = !s.f
 	}
 }
