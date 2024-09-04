@@ -13,12 +13,26 @@ package akin
 //
 // The [Eval] function is used to evaluate 𝑷❨𝒙❩.
 type Predicate interface {
-	visitP(v PVisitor)
+	visit(PVisitor)
 }
 
 // PVisitor is an algorithm with logic specific to each [Predicate] type.
 type PVisitor interface {
 	Const(Const)
 	Nilness(Nilness)
-	TypeEq(TypeEq)
+	Typehood(Typehood)
 }
+
+// Eval evaluates 𝑷❨𝒙❩.
+func Eval(p Predicate, x any) (Truth, Rationale) {
+	e := &evaluator{
+		P: p,
+		X: valueOf(x),
+	}
+
+	p.visit(e)
+
+	return e.Px, Px(*e)
+}
+
+type evaluator Px

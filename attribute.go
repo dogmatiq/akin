@@ -7,14 +7,11 @@ package akin
 // example, the [ValueEq] attribute can be used to represent "the number one",
 // without any specific Go type, such as int or float64.
 //
-// Not all attributes are abstract, and infact, some are also predicates. For
-// example, [TypeEq] implments both [Attribute] and [Predicate].
-//
 // Within documentation and strings, 𝛂 (mathematical bold italic small alpha)
 // is used to represent an attribute. When discussing multiple attributes, the
 // letters 𝛃, 𝜸, and so on, are used.
 type Attribute interface {
-	visitA(AVisitor)
+	visit(AVisitor)
 }
 
 // AVisitor is an algorithm with logic specific to each [Attribute] type.

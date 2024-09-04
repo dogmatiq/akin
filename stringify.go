@@ -7,19 +7,19 @@ import (
 
 func stringP(p Predicate, f form) string {
 	var w strings.Builder
-	p.visitP(&stringer{f, &w})
+	p.visit(&stringer{f, &w})
 	return w.String()
 }
 
 func stringA(a Attribute, f form) string {
 	var w strings.Builder
-	a.visitA(&stringer{f, &w})
+	a.visit(&stringer{f, &w})
 	return w.String()
 }
 
 func stringR(r Rationale) string {
 	var w strings.Builder
-	r.visitR(&stringer{affirmative, &w})
+	r.visit(&stringer{affirmative, &w})
 	return w.String()
 }
 

@@ -16,7 +16,7 @@ const (
 	IsNonNil Nilness = false
 )
 
-func (p Nilness) visitP(v PVisitor)   { v.Nilness(p) }
+func (p Nilness) visit(v PVisitor)    { v.Nilness(p) }
 func (p Nilness) String() string      { return stringP(p, affirmative) }
 func (s *stringer) Nilness(p Nilness) { renderNegatable(s, p, "𝒙 {≍|≭} nil") }
 

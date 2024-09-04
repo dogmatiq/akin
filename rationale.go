@@ -7,7 +7,7 @@ package akin
 // not be confused with 𝑹 (mathematical bold italic capital R) which represents
 // a [Predicate] in some circumstances.
 type Rationale interface {
-	visitR(v RVisitor)
+	visit(RVisitor)
 }
 
 // RVisitor is an algorithm with logic specific to each [Rationale] type.
@@ -24,11 +24,13 @@ type (
 	// produces the same result for any 𝒙.
 	PConst struct{ P Predicate }
 
-	// PVacuous is a [Rationale] based on the fact that 𝑷 has no constituent
-	// predicates 𝐐₁, 𝐐₂, … 𝐐ₙ. That is, 𝑛 = 0.
+	// PVacuous is a [Rationale] based on the fact that 𝑷 makes no real
+	// assertions.
 	//
-	// Such a [Predicate] does not actually describe any criteria, therefore
-	// 𝑷❨𝒙❩ is 𝓾 ([Undefined]) for all 𝒙.
+	// For example, if 𝑷 is a compound [Predicate] with no constituent
+	// predicates 𝐐₁, 𝐐₂, … 𝐐ₙ. That is, 𝑛 = 0 then 𝑷 is vacuous.
+	//
+	// The result of 𝑷❨𝒙❩ is 𝓾 ([Undefined]) for all 𝒙 when 𝑷 is vacuous.
 	PVacuous struct{ P Predicate }
 
 	// Px is a [Rationale] based on the evaluation result of 𝑷❨𝒙❩. It is the
@@ -70,16 +72,16 @@ type (
 	}
 )
 
-func (r PConst) visitR(v RVisitor) { v.PConst(r) }
-func (r PConst) String() string    { return stringR(r) }
-func (s *stringer) PConst(PConst)  { render(s, "𝑷 is constant") }
+func (r PConst) visit(v RVisitor) { v.PConst(r) }
+func (r PConst) String() string   { return stringR(r) }
+func (s *stringer) PConst(PConst) { render(s, "𝑷 is constant") }
 
-func (r PVacuous) visitR(v RVisitor)  { v.PVacuous(r) }
+func (r PVacuous) visit(v RVisitor)   { v.PVacuous(r) }
 func (r PVacuous) String() string     { return stringR(r) }
 func (s *stringer) PVacuous(PVacuous) { render(s, "𝑷 is vacuous") }
 
-func (r Px) visitR(v RVisitor) { v.Px(r) }
-func (r Px) String() string    { return stringR(r) }
+func (r Px) visit(v RVisitor) { v.Px(r) }
+func (r Px) String() string   { return stringR(r) }
 func (s *stringer) Px(r Px) {
 	render(
 		s,
@@ -91,8 +93,8 @@ func (s *stringer) Px(r Px) {
 	)
 }
 
-func (r Qx) visitR(v RVisitor) { v.Qx(r) }
-func (r Qx) String() string    { return stringR(r) }
+func (r Qx) visit(v RVisitor) { v.Qx(r) }
+func (r Qx) String() string   { return stringR(r) }
 func (s *stringer) Qx(r Qx) {
 	render(
 		s,
@@ -105,14 +107,14 @@ func (s *stringer) Qx(r Qx) {
 	)
 }
 
-func (r Ax) visitR(v RVisitor) { v.Ax(r) }
-func (r Ax) String() string    { return stringR(r) }
+func (r Ax) visit(v RVisitor) { v.Ax(r) }
+func (r Ax) String() string   { return stringR(r) }
 func (s *stringer) Ax(r Ax) {
 	if !r.Ax {
 		s.f = !s.f
 	}
 
-	r.A.visitA(s)
+	r.A.visit(s)
 
 	if !r.Ax {
 		s.f = !s.f

@@ -1,6 +1,6 @@
 package akin
 
-// ValueEq is an [Attribute] that holds when 𝒙 is equal to some specific, but
+// ValueEq is an [Attribute] that holds when 𝒙 is equal to some specific
 // abstract value.
 //
 // Abstract in this context means that the value is conceptual, such as the
@@ -14,6 +14,6 @@ type ValueEq struct {
 	Repr string
 }
 
-func (a ValueEq) visitA(v AVisitor)   { v.ValueEq(a) }
+func (a ValueEq) visit(v AVisitor)    { v.ValueEq(a) }
 func (a ValueEq) String() string      { return stringA(a, affirmative) }
 func (s *stringer) ValueEq(a ValueEq) { render(s, "𝒙 {≍|≭} %s", a.Repr) }

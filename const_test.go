@@ -7,7 +7,7 @@ import (
 	. "github.com/dogmatiq/akin/internal/testx"
 )
 
-func TestConstant(t *testing.T) {
+func TestConst(t *testing.T) {
 	AssertIsReduced(t, Top)
 	AssertIsReduced(t, Bottom)
 
