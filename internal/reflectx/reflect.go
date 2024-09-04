@@ -19,27 +19,3 @@ func ValueOf(v any) reflect.Value {
 	}
 	panic(fmt.Sprintf("cannot reflect on value of %v", v))
 }
-
-// IsNil returns true if v is nil.
-//
-// It is similar to [reflect.Value.IsNil], but it works with any kind of value.
-func IsNil(v reflect.Value) bool {
-	switch v.Kind() {
-	default:
-		return false
-	case
-		reflect.Interface,
-		reflect.Pointer,
-		reflect.UnsafePointer,
-		reflect.Slice,
-		reflect.Map,
-		reflect.Func,
-		reflect.Chan:
-		return v.IsNil()
-	}
-}
-
-// IsBuiltIn returns true if t is a named built-in type.
-func IsBuiltIn(t reflect.Type) bool {
-	return t.PkgPath() == "" && t.Name() != ""
-}

@@ -9,8 +9,8 @@ import (
 )
 
 func TestNilness(t *testing.T) {
-	// assert.IsReduced(t, IsNil)
-	// assert.IsReduced(t, IsNonNil)
+	assert.IsReduced(t, IsNil)
+	assert.IsReduced(t, IsNonNil)
 
 	for n, x := range testcase.Nil {
 		t.Run(n, func(t *testing.T) {

@@ -10,18 +10,23 @@ package akin
 type Const bool
 
 const (
-	// Top (denoted ⊤) is a [Predicate] that is [Satisfied] for any 𝒙.
+	// Top (denoted ⊤) is a [Predicate] that evaluates to [True] for any 𝒙.
 	Top Const = true
 
-	// Bottom (denoted ⊥) is a [Predicate] that is [Violated] for any 𝒙.
+	// Bottom (denoted ⊥) is a [Predicate] that evaluates to [False] for any 𝒙.
 	Bottom Const = false
 )
 
 // VisitP calls the method on v associated with the predicate's type.
-func (p Const) VisitP(v PVisitor) { v.Const(p) }
-func (p Const) String() string    { return stringP(p) }
+func (p Const) VisitP(v PVisitor) {
+	v.Const(p)
+}
 
-func (s *stringer) Const(p Const) {
+func (p Const) String() string {
+	return stringP(p)
+}
+
+func (s *identity) Const(p Const) {
 	if p {
 		*s = "⊤"
 	} else {
@@ -30,6 +35,6 @@ func (s *stringer) Const(p Const) {
 }
 
 func (e *evaluator) Const(p Const) {
-	e.PX = truth(p)
-	e.R = PIsConst{p}
+	e.Px = truth(p)
+	e.R = PConst{p}
 }

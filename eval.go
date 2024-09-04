@@ -4,12 +4,12 @@ package akin
 func Eval(p Predicate, x any) (Truth, Rationale) {
 	e := &evaluator{
 		P: p,
-		X: x,
+		X: valueOf(x),
 	}
 
 	p.VisitP(e)
 
-	return e.PX, PofX(*e)
+	return e.Px, Px(*e)
 }
 
-type evaluator PofX
+type evaluator Px

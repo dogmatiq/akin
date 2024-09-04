@@ -20,6 +20,6 @@ type Predicate interface {
 // PVisitor is an algorithm with logic specific to each [Predicate] type.
 type PVisitor interface {
 	Const(Const)
-	// Nilness(Nilness)
-	// TypeEquivalence(TypeEquivalence)
+	Nilness(Nilness)
+	TypeEq(TypeEq)
 }

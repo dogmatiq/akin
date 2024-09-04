@@ -9,8 +9,8 @@ import (
 )
 
 func TestConstant(t *testing.T) {
-	// assert.IsReduced(t, Top)
-	// assert.IsReduced(t, Bottom)
+	assert.IsReduced(t, Top)
+	assert.IsReduced(t, Bottom)
 
 	for n, x := range testcase.All {
 		t.Run(n, func(t *testing.T) {

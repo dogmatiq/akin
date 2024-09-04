@@ -1,32 +1,39 @@
 package akin
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func stringP(p Predicate) string {
-	var s stringer
+	var s identity
 	p.VisitP(&s)
 	return string(s)
 }
 
 func stringR(r Rationale) string {
-	var s stringer
+	var s identity
 	r.VisitR(&s)
 	return string(s)
 }
 
 func stringA(a Attribute) string {
-	var s stringer
+	var s identity
 	a.VisitA(&s)
 	return string(s)
 }
 
 type (
-	stringer        string
-	negatedStringer string
+	identity string
+	inverted string
 )
 
-func (s *stringer) fmt(format string, args ...any) {
-	*s = stringer(fmt.Sprintf(format, args...))
+func (s *identity) fmt(format string, args ...any) {
+	*s = identity(fmt.Sprintf(format, args...))
+}
+
+func (s *inverted) fmt(format string, args ...any) {
+	*s = inverted(fmt.Sprintf(format, args...))
 }
 
 // subscript renders n as a string using unicode subscript characters.
@@ -45,4 +52,16 @@ func subscript[
 	}
 
 	return string(digits)
+}
+
+// parens adds mathematical parentheses to an expression if it contains spaces
+// (and does not already have them).
+func parens(s string) string {
+	if strings.HasPrefix(s, "❨") {
+		return s
+	}
+	if !strings.ContainsAny(s, " ") {
+		return s
+	}
+	return "❨" + s + "❩"
 }

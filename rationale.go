@@ -13,111 +13,111 @@ type Rationale interface {
 
 // RVisitor is an algorithm with logic specific to each [Rationale] type.
 type RVisitor interface {
-	PIsConst(PIsConst)
-	PIsVacuous(PIsVacuous)
-	PofX(PofX)
-	QofX(QofX)
-	AofX(AofX)
+	PConst(PConst)
+	PVacuous(PVacuous)
+	Px(Px)
+	Qx(Qx)
+	Ax(Ax)
 }
 
 type (
-	// PIsConst is a [Rationale] based on the fact that some [Predicate] 𝑷
+	// PConst is a [Rationale] based on the fact that some [Predicate] 𝑷
 	// produces the same result for any 𝒙.
-	PIsConst struct{ P Predicate }
+	PConst struct{ P Predicate }
 
-	// PIsVacuous is a [Rationale] based on the fact that 𝑷 has no constituent
+	// PVacuous is a [Rationale] based on the fact that 𝑷 has no constituent
 	// predicates 𝐐₁, 𝐐₂, … 𝐐ₙ. That is, 𝑛 = 0.
 	//
 	// Such a [Predicate] does not actually describe any criteria, therefore
 	// 𝑷❨𝒙❩ is 𝓾 ([Undefined]) for all 𝒙.
-	PIsVacuous struct{ P Predicate }
+	PVacuous struct{ P Predicate }
 
-	// PofX is a [Rationale] based on the evaluation result of 𝑷❨𝒙❩. It is the
+	// Px is a [Rationale] based on the evaluation result of 𝑷❨𝒙❩. It is the
 	// "top-level" rationale for any call to [Eval].
-	PofX struct {
+	Px struct {
 		P Predicate
-		X any
+		X Value
 
-		// PX is the result of 𝑷❨𝒙❩.
-		PX Truth
+		// Px is the result of 𝑷❨𝒙❩.
+		Px Truth
 
 		// R is the rationale that justifies 𝑷❨𝒙❩.
 		R Rationale
 	}
 
-	// QofX is a [Rationale] based on the evaluation result of 𝐐ₙ❨𝒙), where
+	// Qx is a [Rationale] based on the evaluation result of 𝐐ₙ❨𝒙), where
 	// 𝐐ₙ is the 𝑛ᵗʰ constituent of the compound 𝑷.
-	QofX struct {
+	Qx struct {
 		Q Predicate
-		X any
+		X Value
 
 		// N is the 1-based index of the constituent predicate 𝐐ₙ within 𝑷.
 		N int
 
-		// QX is the result of 𝐐ₙ❨𝒙).
-		QX Truth
+		// Qx is the result of 𝐐ₙ❨𝒙).
+		Qx Truth
 
 		// R is the rationale that justifies 𝐐ₙ❨𝒙).
 		R Rationale
 	}
 
-	// AofX is a [Rationale] based on whether or not some [Attribute] 𝛂 holds
+	// Ax is a [Rationale] based on whether or not some [Attribute] 𝛂 holds
 	// true for 𝒙.
-	AofX struct {
+	Ax struct {
 		A Attribute
 
-		// AX is the result of 𝛂❨𝒙). That is, it is true if 𝛂 holds for 𝒙.
-		AX bool
+		// Ax is the result of 𝛂❨𝒙). That is, it is true if 𝛂 holds for 𝒙.
+		Ax bool
 	}
 )
 
 // VisitR calls the method on v associated with the rationale's type.
-func (r PIsConst) VisitR(v RVisitor)  { v.PIsConst(r) }
-func (r PIsConst) String() string     { return stringR(r) }
-func (s *stringer) PIsConst(PIsConst) { s.fmt("𝑷 is constant") }
+func (r PConst) VisitR(v RVisitor) { v.PConst(r) }
+func (r PConst) String() string    { return stringR(r) }
+func (s *identity) PConst(PConst)  { s.fmt("𝑷 is constant") }
 
 // VisitR calls the method on v associated with the rationale's type.
-func (r PIsVacuous) VisitR(v RVisitor)    { v.PIsVacuous(r) }
-func (r PIsVacuous) String() string       { return stringR(r) }
-func (s *stringer) PIsVacuous(PIsVacuous) { s.fmt("𝑷 is vacuous") }
+func (r PVacuous) VisitR(v RVisitor)  { v.PVacuous(r) }
+func (r PVacuous) String() string     { return stringR(r) }
+func (s *identity) PVacuous(PVacuous) { s.fmt("𝑷 is vacuous") }
 
 // VisitR calls the method on v associated with the rationale's type.
-func (r PofX) VisitR(v RVisitor) { v.PofX(r) }
-func (r PofX) String() string    { return stringR(r) }
+func (r Px) VisitR(v RVisitor) { v.Px(r) }
+func (r Px) String() string    { return stringR(r) }
 
-func (s *stringer) PofX(r PofX) {
+func (s *identity) Px(r Px) {
 	s.fmt(
-		"𝒙 ≔ %v, 𝑷 ≔ %s ∴ 𝑷❨𝒙❩ = %s ∵ %s", // TODO: use %s and add Value type
+		"𝒙 ≔ %s, 𝑷 ≔ %s ∴ 𝑷❨𝒙❩ = %s ∵ %s",
 		r.X,
-		r.P,
-		r.PX,
+		parens(stringP(r.P)),
+		r.Px,
 		r.R,
 	)
 }
 
 // VisitR calls the method on v associated with the rationale's type.
-func (r QofX) VisitR(v RVisitor) { v.QofX(r) }
-func (r QofX) String() string    { return stringR(r) }
+func (r Qx) VisitR(v RVisitor) { v.Qx(r) }
+func (r Qx) String() string    { return stringR(r) }
 
-func (s *stringer) QofX(r QofX) {
+func (s *identity) Qx(r Qx) {
 	s.fmt(
 		"𝐐%s ≔ %s ∴ 𝐐%s❨𝒙) = %s ∵ %s",
 		subscript(r.N),
 		r.Q,
 		subscript(r.N),
-		r.QX,
+		r.Qx,
 		r.R,
 	)
 }
 
 // VisitR calls the method on v associated with the rationale's type.
-func (r AofX) VisitR(v RVisitor) { v.AofX(r) }
-func (r AofX) String() string    { return stringR(r) }
+func (r Ax) VisitR(v RVisitor) { v.Ax(r) }
+func (r Ax) String() string    { return stringR(r) }
 
-func (s *stringer) AofX(r AofX) {
-	if r.AX {
+func (s *identity) Ax(r Ax) {
+	if r.Ax {
 		r.A.VisitA(s)
 	} else {
-		r.A.VisitA((*negatedStringer)(s))
+		r.A.VisitA((*inverted)(s))
 	}
 }

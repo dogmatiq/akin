@@ -4,11 +4,11 @@ package akin
 //
 // Unlike a [Predicate], an [Attribute] cannot be evaluated against a Go value
 // directly. This is because attributes can represent abstract qualities. For
-// example, the [ValueEquivalence] attribute can be used to represent "the
-// number one", without any specific Go type, such as int or float64.
+// example, the [ValueEq] attribute can be used to represent "the number one",
+// without any specific Go type, such as int or float64.
 //
 // Not all attributes are abstract, and infact, some are also predicates. For
-// example, [TypeEquivalence] implments both [Attribute] and [Predicate].
+// example, [TypeEq] implments both [Attribute] and [Predicate].
 //
 // Within documentation and strings, 𝛂 (mathematical bold italic small alpha)
 // is used to represent an attribute. When discussing multiple attributes, the
@@ -20,6 +20,6 @@ type Attribute interface {
 
 // AVisitor is an algorithm with logic specific to each [Attribute] type.
 type AVisitor interface {
-	// TypeEquivalence(TypeEquivalence)
-	// ValueEquivalence(ValueEquivalence)
+	TypeEq(TypeEq)
+	ValueEq(ValueEq)
 }

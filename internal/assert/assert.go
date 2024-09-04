@@ -35,31 +35,31 @@ func assert(
 	}
 }
 
-// // ReducesTo asserts that p reduces to a specific predicate.
-// func ReducesTo(t *testing.T, p, want akin.Predicate) {
-// 	t.Helper()
+// ReducesTo asserts that p reduces to a specific predicate.
+func ReducesTo(t *testing.T, _, _ akin.Predicate) {
+	t.Helper()
 
-// 	got := akin.Reduce(p)
+	// got := akin.Reduce(p)
 
-// 	if akin.Same(got, p) {
-// 		t.Fatalf("expected %s to reduce to %s but no reduction occurred", p, want)
-// 	}
+	// if akin.Same(got, p) {
+	// 	t.Fatalf("expected %s to reduce to %s but no reduction occurred", p, want)
+	// }
 
-// 	if !akin.Same(got, want) {
-// 		t.Fatalf("expected %s to reduce to %s but got %s", p, want, got)
-// 	}
-// }
+	// if !akin.Same(got, want) {
+	// 	t.Fatalf("expected %s to reduce to %s but got %s", p, want, got)
+	// }
+}
 
-// // IsReduced asserts that p is in its simplified form.
-// func IsReduced(t *testing.T, p akin.Predicate) {
-// 	t.Helper()
+// IsReduced asserts that p is in its simplified form.
+func IsReduced(t *testing.T, _ akin.Predicate) {
+	t.Helper()
 
-// 	got := akin.Reduce(p)
+	// 	got := akin.Reduce(p)
 
-// 	if !akin.Same(p, got) {
-// 		t.Fatalf("did not expect further reduction of %s but got %s", p, got)
-// 	}
-// }
+	//	if !akin.Same(p, got) {
+	//		t.Fatalf("did not expect further reduction of %s but got %s", p, got)
+	//	}
+}
 
 // // // IsOrReducesTo asserts that the p either is, or reduces to, a specific
 // // // predicate.
