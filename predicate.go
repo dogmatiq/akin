@@ -1,5 +1,7 @@
 package akin
 
+import "fmt"
+
 // A Predicate describes some criteria that a Go value may (or may not) satisfy.
 //
 // Within documentation and strings, 𝑷 (mathematical bold italic capital P) is
@@ -31,6 +33,15 @@ func Eval(p Predicate, x any) (Truth, Rationale) {
 	}
 
 	p.visit(e)
+
+	if e.R == nil {
+		panic(fmt.Sprintf(
+			"𝒙 ≔ %s, 𝑷 ≔ %s ∴ 𝑷❨𝒙❩ = %s has no rationale",
+			e.X,
+			parens(stringP(e.P, affirmative)),
+			e.Px,
+		))
+	}
 
 	return e.Px, Px(*e)
 }

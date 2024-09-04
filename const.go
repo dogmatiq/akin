@@ -17,7 +17,11 @@ const (
 	Bottom Const = false
 )
 
-func (p Const) visit(v PVisitor)   { v.Const(p) }
-func (p Const) String() string     { return stringP(p, affirmative) }
-func (s *stringer) Const(p Const)  { renderNegatable(s, p, "{⊤|⊥}") }
-func (e *evaluator) Const(p Const) { e.Px = truth(p); e.R = PConst{p} }
+func (p Const) visit(v PVisitor)  { v.Const(p) }
+func (p Const) String() string    { return stringP(p, affirmative) }
+func (s *stringer) Const(p Const) { renderNegatable(s, p, "{⊤|⊥}") }
+
+func (e *evaluator) Const(p Const) {
+	e.Px = truth(p)
+	e.R = PConst{p}
+}
