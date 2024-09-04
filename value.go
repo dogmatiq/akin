@@ -8,7 +8,8 @@ import (
 
 // A Value is a reflection-like representation of a Go value.
 type Value struct {
-	rvalue reflect.Value
+	nat any
+	ref reflect.Value
 }
 
 // valueOf returns the [Value] of v.
@@ -22,17 +23,17 @@ func valueOf(v any) Value {
 		rvalue = reflect.ValueOf(&v).Elem()
 	}
 
-	return Value{rvalue}
+	return Value{v, rvalue}
 }
 
 // Type returns the [Type] of v.
 func (v Value) Type() Type {
-	return Type{v.rvalue.Type()}
+	return Type{v.ref.Type()}
 }
 
 // isNil returns true if the value represented by v is nil.
 func (v Value) isNil() bool {
-	return v.Type().isNilable() && v.rvalue.IsNil()
+	return v.Type().isNilable() && v.ref.IsNil()
 }
 
 func (v Value) String() string {
@@ -47,22 +48,22 @@ func (v Value) valueString() string {
 		return "nil"
 	}
 
-	if v.rvalue.CanComplex() {
-		s := fmt.Sprint(v.rvalue.Interface())
+	if v.ref.CanComplex() {
+		s := fmt.Sprint(v.ref.Interface())
 		return s[1 : len(s)-1]
 	}
 
-	if v.rvalue.CanFloat() {
-		s := fmt.Sprint(v.rvalue.Interface())
+	if v.ref.CanFloat() {
+		s := fmt.Sprint(v.ref.Interface())
 		if strings.ContainsAny(s, ".eE") {
 			return s
 		}
 		return s + ".0"
 	}
 
-	if v.rvalue.Kind() == reflect.String {
-		return fmt.Sprintf("%q", v.rvalue.Interface())
+	if v.ref.Kind() == reflect.String {
+		return fmt.Sprintf("%q", v.ref.Interface())
 	}
 
-	return fmt.Sprintf("%v", v.rvalue.Interface())
+	return fmt.Sprintf("%v", v.ref.Interface())
 }

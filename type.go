@@ -6,7 +6,7 @@ import (
 )
 
 // Type is the type of a Go [Value].
-type Type struct{ rtype reflect.Type }
+type Type struct{ ref reflect.Type }
 
 func typeFor[T any]() Type {
 	return Type{reflect.TypeFor[T]()}
@@ -14,7 +14,7 @@ func typeFor[T any]() Type {
 
 // isNilable returns true if a value of type t can be nil.
 func (t Type) isNilable() bool {
-	switch t.rtype.Kind() {
+	switch t.ref.Kind() {
 	default:
 		return false
 	case
@@ -31,7 +31,7 @@ func (t Type) isNilable() bool {
 
 // isBuiltIn returns true if t is a named built-in type.
 func (t Type) isBuiltIn() bool {
-	return t.rtype.PkgPath() == "" && t.rtype.Name() != ""
+	return t.ref.PkgPath() == "" && t.ref.Name() != ""
 }
 
 // isDefaultForConstant if t is the default type used to represent an untyped
@@ -39,7 +39,7 @@ func (t Type) isBuiltIn() bool {
 //
 // See "default type" under https://go.dev/ref/spec#Constants
 func (t Type) isDefaultForConstant() bool {
-	switch t.rtype.Kind() {
+	switch t.ref.Kind() {
 	case reflect.Bool,
 		reflect.Int32, // rune
 		reflect.Int,
@@ -53,12 +53,12 @@ func (t Type) isDefaultForConstant() bool {
 }
 
 func (t Type) String() string {
-	if t.rtype == reflect.TypeFor[any]() {
+	if t.ref == reflect.TypeFor[any]() {
 		return "any"
 	}
 
 	s := strings.ReplaceAll(
-		t.rtype.String(),
+		t.ref.String(),
 		" {",
 		"{",
 	)

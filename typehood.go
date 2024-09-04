@@ -26,10 +26,10 @@ func (s *stringer) Typehood(p Typehood) { render(s, "𝒙 {∈|∉} %s", p.T) }
 func (e *evaluator) Typehood(p Typehood) {
 	t := e.X.Type()
 
-	if p.T.rtype.Kind() == reflect.Interface {
-		e.Px = truth(t.rtype.Implements(p.T.rtype))
+	if p.T.ref.Kind() == reflect.Interface {
+		e.Px = truth(t.ref.Implements(p.T.ref))
 	} else {
-		e.Px = truth(t.rtype == p.T.rtype)
+		e.Px = truth(t.ref == p.T.ref)
 	}
 
 	e.R = Ax{
