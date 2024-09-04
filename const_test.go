@@ -4,18 +4,17 @@ import (
 	"testing"
 
 	. "github.com/dogmatiq/akin"
-	"github.com/dogmatiq/akin/internal/assert"
-	"github.com/dogmatiq/akin/internal/testcase"
+	. "github.com/dogmatiq/akin/internal/testx"
 )
 
 func TestConstant(t *testing.T) {
-	assert.IsReduced(t, Top)
-	assert.IsReduced(t, Bottom)
+	AssertIsReduced(t, Top)
+	AssertIsReduced(t, Bottom)
 
-	for n, x := range testcase.All {
+	for n, x := range AllCases {
 		t.Run(n, func(t *testing.T) {
-			assert.True(t, Top, x)
-			assert.False(t, Bottom, x)
+			AssertTrue(t, Top, x)
+			AssertFalse(t, Bottom, x)
 		})
 	}
 }

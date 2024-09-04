@@ -1,16 +1,17 @@
-package testcase
+package testx
 
 import "unsafe"
 
 var (
-	// Nilable is a list of test cases that contain values of nilable types.
-	Nilable = Union(
-		Nil,
-		NonNil,
+	// NilableCases is a list of test cases that contain values of nilable
+	// types.
+	NilableCases = Union(
+		NilCases,
+		NonNilCases,
 	)
 
-	// Nil is the set of cases for nil values.
-	Nil = Set{
+	// NilCases is the set of cases for nil values.
+	NilCases = Cases{
 		"nil interface":      nil,
 		"nil unsafe pointer": unsafe.Pointer(nil),
 		"nil pointer":        (*int)(nil),
@@ -22,8 +23,8 @@ var (
 		"nil writable chan":  (chan<- int)(nil),
 	}
 
-	// NonNil is the set of cases for non-nil values of nilable types.
-	NonNil = Set{
+	// NonNilCases is the set of cases for non-nil values of nilable types.
+	NonNilCases = Cases{
 		"non-nil interface":      123,
 		"non-nil unsafe pointer": unsafe.Pointer(new(int)),
 		"non-nil pointer":        new(int),

@@ -1,4 +1,4 @@
-package assert
+package testx
 
 import (
 	"testing"
@@ -6,14 +6,14 @@ import (
 	"github.com/dogmatiq/akin"
 )
 
-// True asserts that 𝑷❨𝒙❩ evaluates to true.
-func True(t *testing.T, p akin.Predicate, v any) {
+// AssertTrue asserts that 𝑷❨𝒙❩ evaluates to 𝓽.
+func AssertTrue(t *testing.T, p akin.Predicate, v any) {
 	t.Helper()
 	assert(t, akin.True, p, v)
 }
 
-// False asserts that 𝑷❨𝒙❩ evaluates to false.
-func False(t *testing.T, p akin.Predicate, v any) {
+// AssertFalse asserts that 𝑷❨𝒙❩ evaluates to 𝓯.
+func AssertFalse(t *testing.T, p akin.Predicate, v any) {
 	t.Helper()
 	assert(t, akin.False, p, v)
 }
@@ -35,8 +35,8 @@ func assert(
 	}
 }
 
-// ReducesTo asserts that p reduces to a specific predicate.
-func ReducesTo(t *testing.T, _, _ akin.Predicate) {
+// AssertReducesTo asserts that p reduces to a specific predicate.
+func AssertReducesTo(t *testing.T, _, _ akin.Predicate) {
 	t.Helper()
 
 	// got := akin.Reduce(p)
@@ -50,8 +50,8 @@ func ReducesTo(t *testing.T, _, _ akin.Predicate) {
 	// }
 }
 
-// IsReduced asserts that p is in its simplified form.
-func IsReduced(t *testing.T, _ akin.Predicate) {
+// AssertIsReduced asserts that p is in its simplified form.
+func AssertIsReduced(t *testing.T, _ akin.Predicate) {
 	t.Helper()
 
 	// 	got := akin.Reduce(p)

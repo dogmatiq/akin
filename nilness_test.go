@@ -4,25 +4,24 @@ import (
 	"testing"
 
 	. "github.com/dogmatiq/akin"
-	"github.com/dogmatiq/akin/internal/assert"
-	"github.com/dogmatiq/akin/internal/testcase"
+	. "github.com/dogmatiq/akin/internal/testx"
 )
 
 func TestNilness(t *testing.T) {
-	assert.IsReduced(t, IsNil)
-	assert.IsReduced(t, IsNonNil)
+	AssertIsReduced(t, IsNil)
+	AssertIsReduced(t, IsNonNil)
 
-	for n, x := range testcase.Nil {
+	for n, x := range NilCases {
 		t.Run(n, func(t *testing.T) {
-			assert.True(t, IsNil, x)
-			assert.False(t, IsNonNil, x)
+			AssertTrue(t, IsNil, x)
+			AssertFalse(t, IsNonNil, x)
 		})
 	}
 
-	for n, x := range testcase.NonNil {
+	for n, x := range NonNilCases {
 		t.Run(n, func(t *testing.T) {
-			assert.False(t, IsNil, x)
-			assert.True(t, IsNonNil, x)
+			AssertFalse(t, IsNil, x)
+			AssertTrue(t, IsNonNil, x)
 		})
 	}
 }

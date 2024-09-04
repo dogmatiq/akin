@@ -1,15 +1,15 @@
-package testcase
+package testx
 
 var (
-	// Number is the set of all cases involving numeric values.
-	Number = Union(
-		Zero,
-		Pos,
-		Neg,
+	// NumericCases is the set of all cases involving numeric values.
+	NumericCases = Union(
+		ZeroCases,
+		PositiveCases,
+		NegativeCases,
 	)
 
-	// Zero is the set of test cases for numbers with a zero value.
-	Zero = Set{
+	// ZeroCases is the set of test cases for numbers with a zero value.
+	ZeroCases = Cases{
 		"zero int":        int(0),
 		"zero int8":       int8(0),
 		"zero int16":      int16(0),
@@ -27,10 +27,10 @@ var (
 		"zero uintptr":    uintptr(0),
 	}
 
-	// Pos is the set of cases for numbers with a positive value.
+	// PositiveCases is the set of cases for numbers with a positive value.
 	//
 	// All cases have the same numeric value of 1, regardless of type.
-	Pos = Set{
+	PositiveCases = Cases{
 		"positive int":        int(1),
 		"positive int8":       int8(1),
 		"positive int16":      int16(1),
@@ -48,10 +48,10 @@ var (
 		"positive uintptr":    uintptr(1),
 	}
 
-	// Neg is the set of cases for numbers with a negative value.
+	// NegativeCases is the set of cases for numbers with a negative value.
 	//
 	// All cases have the same numeric value of -1, regardless of type.
-	Neg = Set{
+	NegativeCases = Cases{
 		"negative int":        int(-1),
 		"negative int8":       int8(-1),
 		"negative int16":      int16(-1),
