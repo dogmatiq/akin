@@ -7,12 +7,6 @@ import (
 	. "github.com/dogmatiq/akin/internal/testx"
 )
 
-type errT struct{}
-
-func (errT) Error() string {
-	return "<error>"
-}
-
 func TestTypehood(t *testing.T) {
 	t.Run("concrete type", func(t *testing.T) {
 		p := IsA[int]()
@@ -28,9 +22,9 @@ func TestTypehood(t *testing.T) {
 	t.Run("interface type", func(t *testing.T) {
 		p := IsA[error]()
 
-		AssertRationale(t, p, errT{}, "𝒙 ≔ akin_test.errT(<error>), 𝑷 ≔ ❨𝒙 ∈ error❩ ∴ 𝑷❨𝒙❩ = 𝓽 ∵ 𝒙 ⦂ akin_test.errT")
+		AssertRationale(t, p, Err{}, "𝒙 ≔ testx.Err(<error>), 𝑷 ≔ ❨𝒙 ∈ error❩ ∴ 𝑷❨𝒙❩ = 𝓽 ∵ 𝒙 ⦂ testx.Err")
 
-		AssertTrue(t, p, errT{})
+		AssertTrue(t, p, Err{})
 		AssertFalse(t, p, 1)
 		AssertFalse(t, p, nil)
 	})
