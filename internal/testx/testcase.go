@@ -2,6 +2,7 @@ package testx
 
 import (
 	"reflect"
+	"slices"
 )
 
 var (
@@ -23,7 +24,7 @@ var (
 )
 
 // Cases is a set of related test cases.
-type Cases []Case
+type Cases []*Case
 
 // Case is a single test case.
 type Case struct {
@@ -65,13 +66,11 @@ func (cc Cases) Filter(
 // Union returns all cases in the given sets of cases.
 func Union(cases ...Cases) Cases {
 	var result Cases
-	seen := map[string]struct{}{}
 
 	for _, cc := range cases {
 		for _, c := range cc {
-			if _, ok := seen[c.Name]; !ok {
+			if !slices.Contains(result, c) {
 				result = append(result, c)
-				seen[c.Name] = struct{}{}
 			}
 		}
 	}

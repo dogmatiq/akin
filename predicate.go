@@ -23,6 +23,7 @@ type PVisitor interface {
 	Const(Const)
 	Nilness(Nilness)
 	Typehood(Typehood)
+	Identity(Identity)
 }
 
 // Eval evaluates 𝑷❨𝒙❩.

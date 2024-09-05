@@ -18,6 +18,12 @@ func AssertFalse(t *testing.T, p akin.Predicate, v any) {
 	assert(t, akin.False, p, v)
 }
 
+// AssertUndefined asserts that 𝑷❨𝒙❩ evaluates to 𝓾.
+func AssertUndefined(t *testing.T, p akin.Predicate, v any) {
+	t.Helper()
+	assert(t, akin.Undefined, p, v)
+}
+
 func assert(
 	t *testing.T,
 	expect akin.Truth,

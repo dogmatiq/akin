@@ -6,6 +6,9 @@ import (
 )
 
 // Type is the type of a Go [Value].
+//
+// The type of a value is notated using 𝝉 (mathematical bold italic small tau).
+// For example, 𝝉❨𝒙❩ refers to the [Type] of the 𝒙 value.
 type Type struct{ ref reflect.Type }
 
 func typeFor[T any]() Type {

@@ -32,6 +32,10 @@ func (v Value) Expr() ValueExpr {
 	return v.expr
 }
 
+func valueFrom(v reflect.Value) Value {
+	return Value{v.Interface(), v}
+}
+
 // Type returns the [Type] of v.
 func (v Value) Type() Type {
 	return Type{v.ref.Type()}
