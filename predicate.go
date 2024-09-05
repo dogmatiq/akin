@@ -29,16 +29,18 @@ type PVisitor interface {
 func Eval(p Predicate, x any) (Truth, Rationale) {
 	e := &evaluator{
 		P: p,
-		X: valueOf(x),
+		X: valueOf(x, VarExpr{"𝒙"}),
 	}
 
 	p.visit(e)
 
 	if e.R == nil {
 		panic(fmt.Sprintf(
-			"𝒙 ≔ %s, 𝑷 ≔ %s ∴ 𝑷❨𝒙❩ = %s has no rationale",
+			"%s ≔ %s, 𝑷 ≔ %s ∴ 𝑷❨%s❩ = %s has no rationale",
+			e.X.Expr(),
 			e.X,
 			parens(stringP(e.P, affirmative)),
+			e.X.Expr(),
 			e.Px,
 		))
 	}

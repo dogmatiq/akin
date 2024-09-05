@@ -17,12 +17,6 @@ func stringA(a Attribute, f form) string {
 	return w.String()
 }
 
-func stringR(r Rationale) string {
-	var w strings.Builder
-	r.visit(&stringer{affirmative, &w})
-	return w.String()
-}
-
 type (
 	// form represents the way avalue that is rendered. It is rendered either in
 	// the [affirmative] or [negative] form.

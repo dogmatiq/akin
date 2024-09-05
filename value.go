@@ -8,12 +8,13 @@ import (
 
 // A Value is a reflection-like representation of a Go value.
 type Value struct {
-	nat any
-	ref reflect.Value
+	nat  any
+	ref  reflect.Value
+	expr ValueExpr
 }
 
 // valueOf returns the [Value] of v.
-func valueOf(v any) Value {
+func valueOf(v any, e ValueExpr) Value {
 	rvalue := reflect.ValueOf(v)
 
 	if !rvalue.IsValid() {
@@ -23,7 +24,12 @@ func valueOf(v any) Value {
 		rvalue = reflect.ValueOf(&v).Elem()
 	}
 
-	return Value{v, rvalue}
+	return Value{v, rvalue, e}
+}
+
+// Expr returns the [ValueExpr] that describes how v was obtained.
+func (v Value) Expr() ValueExpr {
+	return v.expr
 }
 
 // Type returns the [Type] of v.

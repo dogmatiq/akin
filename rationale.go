@@ -1,5 +1,7 @@
 package akin
 
+import "fmt"
+
 // A Rationale describes the logical reasoning that justifies an [Evaluation].
 //
 // Within documentation and strings, ∵ (the because symbol) is used to represent
@@ -72,32 +74,34 @@ type (
 	}
 )
 
-func (r PConst) visit(v RVisitor) { v.PConst(r) }
-func (r PConst) String() string   { return stringR(r) }
-func (s *stringer) PConst(PConst) { render(s, "𝑷 is constant") }
+func (r PConst) visit(v RVisitor)   { v.PConst(r) }
+func (r PVacuous) visit(v RVisitor) { v.PVacuous(r) }
+func (r Px) visit(v RVisitor)       { v.Px(r) }
+func (r Qx) visit(v RVisitor)       { v.Qx(r) }
+func (r Ax) visit(v RVisitor)       { v.Ax(r) }
 
-func (r PVacuous) visit(v RVisitor)   { v.PVacuous(r) }
-func (r PVacuous) String() string     { return stringR(r) }
-func (s *stringer) PVacuous(PVacuous) { render(s, "𝑷 is vacuous") }
+func (r PConst) String() string {
+	return "𝑷 is constant"
+}
 
-func (r Px) visit(v RVisitor) { v.Px(r) }
-func (r Px) String() string   { return stringR(r) }
-func (s *stringer) Px(r Px) {
-	render(
-		s,
-		"𝒙 ≔ %s, 𝑷 ≔ %s ∴ 𝑷❨𝒙❩ = %s ∵ %s",
+func (r PVacuous) String() string {
+	return "𝑷 is vacuous"
+}
+
+func (r Px) String() string {
+	return fmt.Sprintf(
+		"%s ≔ %s, 𝑷 ≔ %s ∴ 𝑷❨%s❩ = %s ∵ %s",
+		r.X.Expr(),
 		r.X,
 		parens(stringP(r.P, affirmative)),
+		r.X.Expr(),
 		r.Px,
 		r.R,
 	)
 }
 
-func (r Qx) visit(v RVisitor) { v.Qx(r) }
-func (r Qx) String() string   { return stringR(r) }
-func (s *stringer) Qx(r Qx) {
-	render(
-		s,
+func (r Qx) String() string {
+	return fmt.Sprintf(
 		"𝐐%s ≔ %s ∴ 𝐐%s❨𝒙) = %s ∵ %s",
 		subscript(r.N),
 		r.Q,
@@ -107,16 +111,6 @@ func (s *stringer) Qx(r Qx) {
 	)
 }
 
-func (r Ax) visit(v RVisitor) { v.Ax(r) }
-func (r Ax) String() string   { return stringR(r) }
-func (s *stringer) Ax(r Ax) {
-	if !r.Ax {
-		s.f = !s.f
-	}
-
-	r.A.visit(s)
-
-	if !r.Ax {
-		s.f = !s.f
-	}
+func (r Ax) String() string {
+	return stringA(r.A, form(r.Ax))
 }
