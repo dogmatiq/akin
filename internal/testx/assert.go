@@ -8,7 +8,7 @@ import (
 )
 
 // AssertRationale asserts that 𝑷❨𝒙❩ produces a specific rationale.
-func AssertRationale(t *testing.T, p akin.Predicate, x any, want string) {
+func AssertRationale(t *testing.T, p akin.Assertion, x any, want string) {
 	t.Helper()
 
 	_, r := akin.Eval(p, x)
@@ -23,21 +23,21 @@ func AssertRationale(t *testing.T, p akin.Predicate, x any, want string) {
 }
 
 // AssertTrue asserts that 𝑷❨𝒙❩ evaluates to 𝓽.
-func AssertTrue(t *testing.T, p akin.Predicate, x any) {
+func AssertTrue(t *testing.T, p akin.Assertion, x any) {
 	t.Helper()
 	assert(t, akin.True, p, x)
 }
 
 // AssertFalse asserts that 𝑷❨𝒙❩ evaluates to 𝓯.
-func AssertFalse(t *testing.T, p akin.Predicate, x any) {
+func AssertFalse(t *testing.T, p akin.Assertion, x any) {
 	t.Helper()
 	assert(t, akin.False, p, x)
 }
 
 func assert(
 	t *testing.T,
-	expect akin.Truth,
-	p akin.Predicate,
+	expect akin.Result,
+	p akin.Assertion,
 	x any,
 ) {
 	t.Helper()

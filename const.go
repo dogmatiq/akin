@@ -1,12 +1,13 @@
 package akin
 
-// Const is a [Predicate] that produces the same result for all 𝒙.
+// Const is an [Assertion] that produces the same result regardless of the
+// [Value].
 //
 // There are two possible values; [Top] and [Bottom], denoted ⊤ and ⊥,
 // respectively.
 //
-// - [Top] is [True] for any 𝒙, that is ⊤❨𝒙) ≔ 𝓽
-// - [Bottom] is [False] for any 𝒙, that is ⊥❨𝒙) ≔ 𝓯
+// - [Top] is [True] for any 𝒙, that is ⊤❨𝒙) ≔ 𝓽 - [Bottom] is [False] for
+// any 𝒙, that is ⊥❨𝒙) ≔ 𝓯
 type Const bool
 
 const (
@@ -17,11 +18,23 @@ const (
 	Bottom Const = false
 )
 
-func (p Const) visit(v PVisitor)  { v.Const(p) }
-func (p Const) String() string    { return stringP(p, affirmative) }
-func (s *stringer) Const(p Const) { renderNegatable(s, p, "{⊤|⊥}") }
+func (p Const) acceptPredicateVisitor(v PredicateVisitor) { v.VisitConst(p) }
+func (p Const) acceptAssertionVisitor(v AssertionVisitor) { v.VisitConst(p) }
+func (p Const) String() string                            { return predicateToString(p) }
 
-func (e *evaluator) Const(p Const) {
-	e.Px = truth(p)
-	e.R = PConst{p}
+func (pr *predicateRenderer) VisitConst(p Const) {
+	if pr.Form == negativeForm {
+		p = !p
+	}
+
+	if p {
+		pr.Render("⊤")
+	} else {
+		pr.Render("⊥")
+	}
+}
+
+func (e *evaluator) VisitConst(p Const) {
+	e.Result = asResult(p)
+	e.Rationale = ConstRationale{p, e.PredicateExpr}
 }

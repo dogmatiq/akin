@@ -14,6 +14,9 @@ type ValueEq struct {
 	Repr string
 }
 
-func (a ValueEq) visit(v AVisitor)    { v.ValueEq(a) }
-func (a ValueEq) String() string      { return stringA(a, affirmative) }
-func (s *stringer) ValueEq(a ValueEq) { render(s, "𝒙 {≍|≭} %s", a.Repr) }
+func (a ValueEq) acceptPredicateVisitor(v PredicateVisitor) { v.VisitValueEq(a) }
+func (a ValueEq) String() string                            { return predicateToString(a) }
+
+func (r *predicateRenderer) VisitValueEq(a ValueEq) {
+	r.Render("𝒙 {≍|≭} %s", a.Repr)
+}

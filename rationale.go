@@ -1,116 +1,113 @@
 package akin
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // A Rationale describes the logical reasoning that justifies an [Evaluation].
 //
-// Within documentation and strings, ∵ (the because symbol) is used to represent
-// a rationale. The latin letter R is used throughout the codebase, which should
-// not be confused with 𝑹 (mathematical bold italic capital R) which represents
-// a [Predicate] in some circumstances.
+// The ∵ symbol (because) is used to represent a rationale.
 type Rationale interface {
-	visit(RVisitor)
-}
-
-// RVisitor is an algorithm with logic specific to each [Rationale] type.
-type RVisitor interface {
-	PConst(PConst)
-	PVacuous(PVacuous)
-	Px(Px)
-	Qx(Qx)
-	Ax(Ax)
+	fmt.Stringer
+	acceptRationaleVisitor(RationaleVisitor)
 }
 
 type (
-	// PConst is a [Rationale] based on the fact that some [Predicate] 𝑷
-	// produces the same result for any 𝒙.
-	PConst struct{ P Predicate }
-
-	// PVacuous is a [Rationale] based on the fact that 𝑷 makes no real
-	// assertions.
-	//
-	// For example, if 𝑷 is a compound [Predicate] with no constituent
-	// predicates 𝐐₁, 𝐐₂, … 𝐐ₙ. That is, 𝑛 = 0 then 𝑷 is vacuous.
-	//
-	// The result of 𝑷❨𝒙❩ is 𝓾 ([Undefined]) for all 𝒙 when 𝑷 is vacuous.
-	PVacuous struct{ P Predicate }
-
-	// Px is a [Rationale] based on the evaluation result of 𝑷❨𝒙❩. It is the
-	// "top-level" rationale for any call to [Eval].
-	Px struct {
-		P Predicate
-		X Value
-
-		// Px is the result of 𝑷❨𝒙❩.
-		Px Truth
-
-		// R is the rationale that justifies 𝑷❨𝒙❩.
-		R Rationale
+	// ConstRationale is the [Rationale] provided when a [Predicate] always
+	// produces the same [Result] regardless of the [Value].
+	ConstRationale struct {
+		Predicate     Predicate
+		PredicateExpr Expr
 	}
 
-	// Qx is a [Rationale] based on the evaluation result of 𝐐ₙ❨𝒙), where
-	// 𝐐ₙ is the 𝑛ᵗʰ constituent of the compound 𝑷.
-	Qx struct {
-		Q Predicate
-		X Value
-
-		// N is the 1-based index of the constituent predicate 𝐐ₙ within 𝑷.
-		N int
-
-		// Qx is the result of 𝐐ₙ❨𝒙).
-		Qx Truth
-
-		// R is the rationale that justifies 𝐐ₙ❨𝒙).
-		R Rationale
+	// VacuousRationale is the [Rationale] provided when a [Predicate] makes no
+	// meaningful assertion about the [Value].
+	//
+	// For example, a compound predicate with no constituent predicates is
+	// considered vacuous. The [Result] of a vacuous predicate is always
+	// [Undefined].
+	VacuousRationale struct {
+		Predicate     Predicate
+		PredicateExpr Expr
 	}
 
-	// Ax is a [Rationale] based on whether or not some [Attribute] 𝛂 holds
-	// true for 𝒙.
-	Ax struct {
-		A Attribute
+	// AssertionRationale is the [Rationale] provided when a [Result] is
+	// determined by evaluation of an [Assertion].
+	AssertionRationale struct {
+		Assertion     Assertion
+		AssertionExpr Expr
+		Value         Value
+		ValueExpr     Expr
+		Result        Result
+		Rationale     Rationale
+	}
 
-		// Ax is the result of 𝛂❨𝒙). That is, it is true if 𝛂 holds for 𝒙.
-		Ax bool
+	// IntrinsicRationale is the [Rationale] provided when a [Result] is derived
+	// from a [Predicate] that is not an [Assertion].
+	//
+	// Such predicates describe intrinsic attributes of a value which may be
+	// abstract in nature.
+	IntrinsicRationale struct {
+		Predicate     Predicate
+		PredicateExpr Expr
+		Value         Value
+		ValueExpr     Expr
+		Result        bool
 	}
 )
 
-func (r PConst) visit(v RVisitor)   { v.PConst(r) }
-func (r PVacuous) visit(v RVisitor) { v.PVacuous(r) }
-func (r Px) visit(v RVisitor)       { v.Px(r) }
-func (r Qx) visit(v RVisitor)       { v.Qx(r) }
-func (r Ax) visit(v RVisitor)       { v.Ax(r) }
-
-func (r PConst) String() string {
-	return "𝑷 is constant"
+// RationaleVisitor is an algorithm with logic specific to each [Rationale] type.
+type RationaleVisitor interface {
+	VisitConstRationale(ConstRationale)
+	VisitVacuousRationale(VacuousRationale)
+	VisitAssertionRationale(AssertionRationale)
+	VisitIntrinsicRationale(IntrinsicRationale)
 }
 
-func (r PVacuous) String() string {
-	return "𝑷 is vacuous"
+func (r ConstRationale) acceptRationaleVisitor(v RationaleVisitor)     { v.VisitConstRationale(r) }
+func (r VacuousRationale) acceptRationaleVisitor(v RationaleVisitor)   { v.VisitVacuousRationale(r) }
+func (r AssertionRationale) acceptRationaleVisitor(v RationaleVisitor) { v.VisitAssertionRationale(r) }
+func (r IntrinsicRationale) acceptRationaleVisitor(v RationaleVisitor) { v.VisitIntrinsicRationale(r) }
+
+func (r ConstRationale) String() string     { return rationaleToString(r) }
+func (r VacuousRationale) String() string   { return rationaleToString(r) }
+func (r AssertionRationale) String() string { return rationaleToString(r) }
+func (r IntrinsicRationale) String() string { return rationaleToString(r) }
+
+func (rr *rationaleRenderer) VisitConstRationale(r ConstRationale) {
+	rr.Render("%s is constant", r.PredicateExpr)
 }
 
-func (r Px) String() string {
-	return fmt.Sprintf(
-		"%s ≔ %s, 𝑷 ≔ %s ∴ 𝑷❨%s❩ = %s ∵ %s",
-		r.X.Expr(),
-		r.X,
-		parens(stringP(r.P, affirmative)),
-		r.X.Expr(),
-		r.Px,
-		r.R,
-	)
+func (rr *rationaleRenderer) VisitVacuousRationale(r VacuousRationale) {
+	rr.Render("%s is vacuous", r.PredicateExpr)
 }
 
-func (r Qx) String() string {
-	return fmt.Sprintf(
-		"𝐐%s ≔ %s ∴ 𝐐%s❨𝒙) = %s ∵ %s",
-		subscript(r.N),
-		r.Q,
-		subscript(r.N),
-		r.Qx,
-		r.R,
-	)
+func (rr *rationaleRenderer) VisitAssertionRationale(r AssertionRationale) {
+	pr := &predicateRenderer{
+		PredicateExpr: r.AssertionExpr,
+		ValueExpr:     r.ValueExpr,
+		Form:          affirmativeForm,
+		Parenthesize:  true,
+		Output:        rr.Output,
+	}
+
+	rr.Render("%s ≔ %s, %s ≔ ", r.ValueExpr, r.Value, r.AssertionExpr)
+	r.Assertion.acceptAssertionVisitor(pr)
+	rr.Render(" ∴ %s❨%s❩ = %s ∵ ", r.AssertionExpr, r.ValueExpr, r.Result)
+	r.Rationale.acceptRationaleVisitor(rr)
 }
 
-func (r Ax) String() string {
-	return stringA(r.A, form(r.Ax))
+func (rr *rationaleRenderer) VisitIntrinsicRationale(r IntrinsicRationale) {
+	pr := &predicateRenderer{
+		PredicateExpr: r.PredicateExpr,
+		ValueExpr:     r.ValueExpr,
+		Form:          affirmativeForm,
+		Output:        rr.Output,
+	}
+
+	if !r.Result {
+		pr.Form = negativeForm
+	}
+
+	r.Predicate.acceptPredicateVisitor(pr)
 }
