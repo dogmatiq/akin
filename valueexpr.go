@@ -12,6 +12,7 @@ type ValueExpr interface {
 // type.
 type ValueExprVisitor interface {
 	VarExpr(VarExpr)
+	LitExpr(LitExpr)
 	IndexExpr(IndexExpr)
 	KeyExpr(KeyExpr)
 	FieldExpr(FieldExpr)
@@ -22,6 +23,11 @@ type (
 	// VarExpr is a [ValueExpr] describing a named variable, such as 𝒙.
 	VarExpr struct {
 		Name string
+	}
+
+	// LitExpr is a [ValueExpr] describing a literal value.
+	LitExpr struct {
+		Value Value
 	}
 
 	// IndexExpr is a [ValueExpr] describing the an element within a slice or
@@ -52,6 +58,7 @@ type (
 )
 
 func (e VarExpr) visit(v ValueExprVisitor)   { v.VarExpr(e) }
+func (e LitExpr) visit(v ValueExprVisitor)   { v.LitExpr(e) }
 func (e IndexExpr) visit(v ValueExprVisitor) { v.IndexExpr(e) }
 func (e KeyExpr) visit(v ValueExprVisitor)   { v.KeyExpr(e) }
 func (e FieldExpr) visit(v ValueExprVisitor) { v.FieldExpr(e) }
@@ -59,6 +66,10 @@ func (e DerefExpr) visit(v ValueExprVisitor) { v.DerefExpr(e) }
 
 func (e VarExpr) String() string {
 	return e.Name
+}
+
+func (e LitExpr) String() string {
+	return e.Value.String()
 }
 
 func (e IndexExpr) String() string {
@@ -84,3 +95,5 @@ func (e FieldExpr) String() string {
 func (e DerefExpr) String() string {
 	return fmt.Sprintf("(*%s)", e.Pointer)
 }
+
+var varX = VarExpr{"𝒙"}

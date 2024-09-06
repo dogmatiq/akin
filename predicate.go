@@ -2,50 +2,48 @@ package akin
 
 import "fmt"
 
-// A Predicate describes some criteria that a Go value may (or may not) satisfy.
-//
-// Within documentation and strings, 𝑷 (mathematical bold italic capital P) is
-// used to represent a predicate. 𝒙 (mathematical bold italic small X)
-// represents a value that is tested against the criteria described by 𝑷. When
-// discussing multiple predicates, the letters 𝐐, 𝑹, and so on, are used.
-//
-// To determine if 𝒙 satisfies 𝑷, we "evaluate 𝑷 of 𝒙", written 𝑷❨𝒙❩. The
-// result of an evaluation is one of [True], [False] or [Undefined], denoted
-// 𝓽, 𝓯 and 𝓾, respectively (mathematical bold script small letters).
-//
-// The [Eval] function is used to evaluate 𝑷❨𝒙❩.
-type Predicate interface {
-	visit(PVisitor)
-}
+type (
+	// A Predicate describes some criteria that a [Value] may or may not
+	// satisfy.
+	//
+	// Predicates are represented by a "mathematical bold italic capital"
+	// letter, typically 𝑷, although other letters may be used when discussing
+	// multiple predicates.
+	//
+	// Similarly, values are represented by a "mathematical bold italic small"
+	// letter, typically 𝒙, although other letters may be used when discussing
+	// multiple values.
+	Predicate interface {
+		fmt.Stringer
 
-// PVisitor is an algorithm with logic specific to each [Predicate] type.
-type PVisitor interface {
-	Const(Const)
-	Nilness(Nilness)
-	Typehood(Typehood)
-}
-
-// Eval evaluates 𝑷❨𝒙❩.
-func Eval(p Predicate, x any) (Truth, Rationale) {
-	e := &evaluator{
-		P: p,
-		X: valueOf(x, VarExpr{"𝒙"}),
+		acceptPredicateVisitor(PredicateVisitor)
 	}
 
-	p.visit(e)
+	// An Assertion is a kind of [Predicate] that can directly test if a [Value]
+	// satisfies the predicate's criteria.
+	//
+	// To determine if 𝒙 satisfies 𝑷, we "evaluate 𝑷 of 𝒙", written 𝑷❨𝒙❩,
+	// using the [Eval] function.
+	Assertion interface {
+		Predicate
 
-	if e.R == nil {
-		panic(fmt.Sprintf(
-			"%s ≔ %s, 𝑷 ≔ %s ∴ 𝑷❨%s❩ = %s has no rationale",
-			e.X.Expr(),
-			e.X,
-			parens(stringP(e.P, affirmative)),
-			e.X.Expr(),
-			e.Px,
-		))
+		acceptAssertionVisitor(AssertionVisitor)
 	}
+)
 
-	return e.Px, Px(*e)
+// A PredicateVisitor is an algorithm that applies different logic for each
+// [Predicate] type.
+type PredicateVisitor interface {
+	AssertionVisitor
+
+	VisitTypeEq(TypeEq)
+	VisitValueEq(ValueEq)
 }
 
-type evaluator Px
+// An AssertionVisitor is an algorithm that applies different logic for each
+// [Assertion] type.
+type AssertionVisitor interface {
+	VisitConst(Const)
+	VisitNilness(Nilness)
+	VisitTypehood(Typehood)
+}

@@ -8,13 +8,9 @@ type TypeEq struct {
 	T Type
 }
 
-func (a TypeEq) visit(v AVisitor) { v.TypeEq(a) }
-func (a TypeEq) String() string   { return stringA(a, affirmative) }
+func (a TypeEq) acceptPredicateVisitor(v PredicateVisitor) { v.VisitTypeEq(a) }
+func (a TypeEq) String() string                            { return toDefaultString(a) }
 
-func (s *stringer) TypeEq(a TypeEq) {
-	if s.f == affirmative {
-		render(s, "𝒙 ⦂ %s", a.T)
-	} else {
-		render(s, "¬❨𝒙 ⦂ %s❩", a.T)
-	}
+func (r *renderer) VisitTypeEq(a TypeEq) {
+	r.render("𝒙 ⦂ %s", a.T)
 }

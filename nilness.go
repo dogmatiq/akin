@@ -1,6 +1,6 @@
 package akin
 
-// Nilness is a [Predicate] that is satisfied when 𝒙 has "nilness" equal to the
+// Nilness is a [PredicateP] that is satisfied when 𝒙 has "nilness" equal to the
 // predicate's value.
 //
 // There are two possible values; [IsNil] and [IsNonNil].
@@ -16,24 +16,34 @@ const (
 	IsNonNil Nilness = false
 )
 
-func (p Nilness) visit(v PVisitor)    { v.Nilness(p) }
-func (p Nilness) String() string      { return stringP(p, affirmative) }
-func (s *stringer) Nilness(p Nilness) { renderNegatable(s, p, "𝒙 {≍|≭} nil") }
+func (p Nilness) acceptPredicateVisitor(v PredicateVisitor) { v.VisitNilness(p) }
+func (p Nilness) acceptAssertionVisitor(v AssertionVisitor) { v.VisitNilness(p) }
+func (p Nilness) String() string                            { return toDefaultString(p) }
 
-func (e *evaluator) Nilness(p Nilness) {
+func (r *renderer) VisitNilness(p Nilness) {
+	if p {
+		r.render("𝒙 {=|≠} nil")
+	} else {
+		r.render("𝒙 {≠|=} nil")
+	}
+}
+
+func (e *evaluator) VisitNilness(p Nilness) {
 	wantNil := bool(p)
-	gotNil := e.X.isNil()
-	e.Px = truth(gotNil == wantNil)
+	gotNil := e.Value.isNil()
+	e.Result = asResult(gotNil == wantNil)
 
-	if e.X.Type().isNilable() {
-		e.R = Ax{
-			A:  ValueEq{"nil"},
-			Ax: gotNil,
+	if e.Value.Type().isNilable() {
+		e.Rationale = IntrinsicRationale{
+			Predicate: ValueEq{"nil"},
+			Value:     e.Value,
+			Result:    gotNil,
 		}
 	} else {
-		e.R = Ax{
-			A:  TypeEq{e.X.Type()},
-			Ax: true,
+		e.Rationale = IntrinsicRationale{
+			Predicate: TypeEq{e.Value.Type()},
+			Value:     e.Value,
+			Result:    true,
 		}
 	}
 }
